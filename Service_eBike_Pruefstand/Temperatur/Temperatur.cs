@@ -1,7 +1,4 @@
 ﻿using System;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.WiringPi;
 using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
@@ -15,14 +12,17 @@ namespace Service_eBike_Pruefstand
         #endregion
 
         #region constructor & destructor
-        public Temperatur()
+        public Temperatur(ADC_MAX11617.Address addr, ADC_MAX11617.Channel chan) : base(addr)
         {
-
+            this.Channel = (byte)chan;
         }
         #endregion
 
         #region methodes
-
+        public bool Read(byte chan, out float temperatur)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
     }

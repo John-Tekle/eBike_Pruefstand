@@ -7,7 +7,7 @@ using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
 {
-    public class Luefter: AnalogToDigital, ILuefter
+    public class Luefter: ILuefter
     {
         public event EventHandler<LuefterEventArgs> ValueChanged;
 
@@ -16,7 +16,7 @@ namespace Service_eBike_Pruefstand
         #endregion
 
         #region Constructor and Deconstructor
-        public Luefter(I2C_Addr addr)
+        public Luefter(ADC_MAX11617.Address addr)
         {
 
         }

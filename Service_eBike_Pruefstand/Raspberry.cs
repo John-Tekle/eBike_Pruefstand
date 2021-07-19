@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Unosquare.RaspberryIO;
-using Unosquare.WiringPi;
 
 namespace Service_eBike_Pruefstand
 {
     public class Raspberry
     {
         #region properties
+        public Anemometer Anemometer { get; }
+        public Gewicht Gewicht { get; }
+        public Luefter Luefter { get; }
+        public Temperatur Temperatur { get; }
         #endregion
 
         #region constructor & destructor

@@ -25,5 +25,6 @@ namespace Service_eBike_Pruefstand
 
         [DllImport(WiringPiLibrary, EntryPoint = "write", SetLastError = true)]
         public static extern int WiringPiI2CWriteEx(int fd, byte[] data, int length);
+
     }
 }

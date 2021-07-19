@@ -16,5 +16,9 @@ namespace Common_eBike_Pruefstand
         #region properties
         float Temperature { get; }
         #endregion
+
+        #region Method
+        bool Read(byte chan, out float temperatur);
+        #endregion
     }
 }

@@ -7,7 +7,7 @@ using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
 {
-    public class Gewicht: IGewicht
+    public class Gewicht: AnalogToDigital, IGewicht
     {
         public event EventHandler<GewichtEventArgs> LoadChanged;
 
@@ -16,9 +16,9 @@ namespace Service_eBike_Pruefstand
         #endregion
 
         #region constructor & destructor
-        public Gewicht(I2C_Addr addr)
+        public Gewicht(ADC_MAX11617.Address addr, ADC_MAX11617.Channel chan) : base(addr)
         {
-
+            this.Channel = (byte)chan;
         }
         #endregion
 

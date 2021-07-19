@@ -7,7 +7,7 @@ using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
 {
-    public class Anemometer : IAnemometer
+    public class Anemometer : AnalogToDigital ,IAnemometer
     {
         #region members
         public event EventHandler<AnemometerEventArgs> SpeedChanged;
@@ -18,9 +18,9 @@ namespace Service_eBike_Pruefstand
         #endregion
 
         #region constructor & destructor
-        public Anemometer(I2C_Addr addr)
+        public Anemometer(ADC_MAX11617.Address addr, ADC_MAX11617.Channel chan): base(addr)
         {
-
+            this.Channel = (byte)chan;
         }
         #endregion
     }
