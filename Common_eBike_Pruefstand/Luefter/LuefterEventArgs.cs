@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Common_eBike_Pruefstand
 {
-    public class LuefterEventArgs
+    public class LuefterEventArgs : EventArgs
     {
         #region constructor & destructor
-        public LuefterEventArgs(int value)
+        public LuefterEventArgs(byte value)
         {
             Value = value;
         }
@@ -17,7 +17,7 @@ namespace Common_eBike_Pruefstand
 
 
         #region properties
-        public int Value { get; }
+        public byte Value { get; }
         #endregion
     }
 }

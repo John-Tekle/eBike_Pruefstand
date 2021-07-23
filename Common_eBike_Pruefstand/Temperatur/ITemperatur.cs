@@ -14,7 +14,7 @@ namespace Common_eBike_Pruefstand
 
 
         #region properties
-        float Temperature { get; }
+        float TemperatureValue { get; }
         #endregion
 
         #region Method

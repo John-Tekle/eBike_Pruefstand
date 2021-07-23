@@ -14,7 +14,7 @@ namespace Common_eBike_Pruefstand
 
 
         #region properties
-        float Value { get; }
+        byte Value { get; }
         #endregion
     }
 }

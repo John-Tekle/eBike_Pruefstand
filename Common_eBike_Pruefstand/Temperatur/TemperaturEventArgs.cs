@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common_eBike_Pruefstand
 {
-    public class TemperaturEventArgs
+    public class TemperaturEventArgs : EventArgs
     {
         #region constructor & destructor
         public TemperaturEventArgs(float temperature)
@@ -17,7 +17,7 @@ namespace Common_eBike_Pruefstand
 
 
         #region properties
-        public float Temperature { get; }
+        public float Temperature { get; private set; }
         #endregion
     }
 }

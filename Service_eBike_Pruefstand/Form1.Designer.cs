@@ -149,14 +149,14 @@ namespace Service_eBike_Pruefstand
             this.MessagesText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(45)))), ((int)(((byte)(60)))));
             this.MessagesText.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.MessagesText.Enabled = false;
-            this.MessagesText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MessagesText.ForeColor = System.Drawing.SystemColors.Control;
+            this.MessagesText.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MessagesText.ForeColor = System.Drawing.Color.Red;
             this.MessagesText.Location = new System.Drawing.Point(12, 1029);
             this.MessagesText.Name = "MessagesText";
             this.MessagesText.ReadOnly = true;
-            this.MessagesText.Size = new System.Drawing.Size(1635, 15);
+            this.MessagesText.Size = new System.Drawing.Size(1635, 22);
             this.MessagesText.TabIndex = 1;
-            this.MessagesText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.MessagesText.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // eBIKE
             // 

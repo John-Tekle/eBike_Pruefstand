@@ -1,28 +1,24 @@
 ﻿using System;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.WiringPi;
 using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
 {
-    public abstract class AnalogToDigital: IADC_MAX11617
+    public abstract class AnalogToDigital: I2C_Raspberry<ADC_MAX11617.Address>, IADC_MAX11617
     {
         #region members
-        private II2CDevice ADC_Device;
+        //private II2CDevice ADC_Device;
         private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
         #endregion
 
         #region constructor & destructor
-        public AnalogToDigital(ADC_MAX11617.Address addr)
+        public AnalogToDigital(ADC_MAX11617.Address addr): base(addr)
         {
-            Pi.Init<BootstrapWiringPi>();
-            ADC_Device = Pi.I2C.AddDevice((byte)addr & 0x7F); //7-Bit Adress
+
         }
         #endregion
 
         #region properties
-        protected byte Channel { get; set; } = 0;
+        public byte Channel { get; protected set; } = 0;
         #endregion
 
         #region methodes
@@ -42,8 +38,8 @@ namespace Service_eBike_Pruefstand
         public bool WriteConfigByte(byte command_)
         {
             byte[] command = new byte[1];
-            command[1] = command_;
-            command[1] = (byte)(command[1] & 0b01111111); // Register bit. 1 = configuration byte
+            command[0] = command_;
+            command[0] = (byte)(command[0] & 0b01111111); // Register bit. 1 = configuration byte
             int result = ADC_Device.Write(command, command.Length);
             if (result != 1)
             {
