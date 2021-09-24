@@ -18,9 +18,9 @@ namespace Client_eBike_Pruefstand
     /// <summary>
     /// Interaction logic for StartWin.xaml
     /// </summary>
-    public partial class StartWin : Window
+    public partial class Connecting_Win : Window
     {
-        public StartWin()
+        public Connecting_Win()
         {
             InitializeComponent();
         }

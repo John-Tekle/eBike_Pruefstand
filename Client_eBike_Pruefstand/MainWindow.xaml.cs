@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 
 namespace Client_eBike_Pruefstand
 {
@@ -21,13 +22,52 @@ namespace Client_eBike_Pruefstand
     /// </summary>
     public partial class MainWindow : Window
     {
-        StartWin startwin = new StartWin();
+        #region Members
+        List<CheckBox> checkBoxes;
+        Connecting_Win startwin = new Connecting_Win();
+        Einstellung_Win einstellung_Win;
+        private CheckBox currentcheckbox;
+        #endregion
 
         public MainWindow()
         {
             startwin.Show();
+            while (!startwin.ShowActivated) ;
             InitializeComponent();
             startwin.Close();
+            checkBoxes = new List<CheckBox>() { checkBox0, checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
+            Einstellung_Win.EinstellungChanged += Einstellung_Win_EinstellungChanged;
+            einstellung_Win = new Einstellung_Win();
+
+            #region RegistryHelper
+            for (int i = 0; i < 6; i++)
+                checkBoxes[i].Content = RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, "");
+            if (currentcheckbox != null) expander.Header = currentcheckbox.Content;
+            else expander.Header = "######";
+            expander.Header = RegistryHelper.RegistryGetString("Expander Header", "");
+            if (RegistryHelper.RegistryGetString("IP Address", "") != "") einstellung_Win.IPAddress = RegistryHelper.RegistryGetString("IP Address", "");
+            else einstellung_Win.IPAddress = Einstellung_Win.staticIp;
+            foreach (var checkBox in checkBoxes.Where(_checkBox => _checkBox.Content.ToString() == RegistryHelper.RegistryGetString("Last Checked", "")))
+                checkBox.IsChecked = true;
+            #endregion
+        }
+
+        private void Einstellung_Win_EinstellungChanged(object sender, EinstellungEventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text != checkBoxes[i].Name)
+                {
+                    checkBoxes[i].Content = e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text;
+                    if (currentcheckbox != null)
+                    {
+                        expander.Header = currentcheckbox.Content;
+                        RegistryHelper.RegistrySetString("Expander Header", expander.Header);
+                        RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
+                    }
+                }
+                    
+            }
         }
 
         #region Move WinApp using Mouse
@@ -81,6 +121,7 @@ namespace Client_eBike_Pruefstand
         private void Windows_Close(object sender, MouseButtonEventArgs e)
         {
             startwin.Close();
+            einstellung_Win.Close();
             this.Close();
         }
 
@@ -125,6 +166,31 @@ namespace Client_eBike_Pruefstand
 
         private void Click_Einstellung(object sender, RoutedEventArgs e)
         {
+            einstellung_Win.ShowDialog();
+        }
+
+        /// <summary>
+        /// You can only select one at a time
+        /// </summary>
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            currentcheckbox = (CheckBox)sender;
+            expander.IsExpanded = false;
+            expander.Header = currentcheckbox.Content;
+            foreach (var checkBox in checkBoxes.OfType<CheckBox>().Where(_checkBox => (bool)_checkBox.IsChecked))
+                if (!currentcheckbox.Name.Equals(checkBox.Name)) 
+                    checkBox.IsChecked = false;
+            RegistryHelper.RegistrySetString("Expander Header", expander.Header);
+            RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            expander.IsExpanded = false;
+            foreach (var checkBox in checkBoxes.OfType<CheckBox>().Where(_checkBox => (bool)_checkBox.IsChecked)) return;
+            expander.Header = "######";
+            RegistryHelper.RegistrySetString("Expander Header", "######");
+            RegistryHelper.RegistrySetString("Last Checked", "");
 
         }
     }

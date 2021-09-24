@@ -59,6 +59,85 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <SolidColorBrush x:Key="OptionMark.Static.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="OptionMark.Static.Border" Color="#FF707070"/>
+        <Style x:Key="OptionMarkFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="14,0,0,0" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="OptionMark.MouseOver.Background" Color="#FFF3F9FF"/>
+        <SolidColorBrush x:Key="OptionMark.MouseOver.Border" Color="#FF5593FF"/>
+        <SolidColorBrush x:Key="OptionMark.MouseOver.Glyph" Color="#FF212121"/>
+        <SolidColorBrush x:Key="OptionMark.Disabled.Background" Color="#FFE6E6E6"/>
+        <SolidColorBrush x:Key="OptionMark.Disabled.Border" Color="#FFBCBCBC"/>
+        <SolidColorBrush x:Key="OptionMark.Disabled.Glyph" Color="#FF707070"/>
+        <SolidColorBrush x:Key="OptionMark.Pressed.Background" Color="#FFD9ECFF"/>
+        <SolidColorBrush x:Key="OptionMark.Pressed.Border" Color="#FF3C77DD"/>
+        <SolidColorBrush x:Key="OptionMark.Pressed.Glyph" Color="#FF212121"/>
+        <SolidColorBrush x:Key="OptionMark.Static.Glyph" Color="#FF212121"/>
+        <Style x:Key="CheckBoxStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource OptionMark.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OptionMark.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <Grid x:Name="templateRoot" Background="#FF31384D" SnapsToDevicePixels="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="checkBoxBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="1" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Grid x:Name="markGrid">
+                                    <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Fill="{StaticResource OptionMark.Static.Glyph}" Margin="1" Opacity="0" Stretch="None"/>
+                                    <Rectangle x:Name="indeterminateMark" Fill="{StaticResource OptionMark.Static.Glyph}" Margin="2" Opacity="0"/>
+                                </Grid>
+                            </Border>
+                            <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasContent" Value="true">
+                                <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
+                                <Setter Property="Padding" Value="4,-1,0,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.MouseOver.Border}"/>
+                                <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource OptionMark.MouseOver.Glyph}"/>
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource OptionMark.MouseOver.Glyph}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Disabled.Border}"/>
+                                <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource OptionMark.Disabled.Glyph}"/>
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource OptionMark.Disabled.Glyph}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Pressed.Border}"/>
+                                <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource OptionMark.Pressed.Glyph}"/>
+                                <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource OptionMark.Pressed.Glyph}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
+                                <Setter Property="Opacity" TargetName="indeterminateMark" Value="0"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="{x:Null}">
+                                <Setter Property="Opacity" TargetName="optionMark" Value="0"/>
+                                <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800">
         <Rectangle Fill="#FF39393C" HorizontalAlignment="Left" Height="450" RadiusY="13" RadiusX="13" VerticalAlignment="Top" Width="800"/>
@@ -68,9 +147,9 @@
         <Ellipse x:Name="El_Mini" Fill="#FFFFF309" HorizontalAlignment="Left" Height="20" Margin="717,10,0,0" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="Windows_Minimize" MouseLeftButtonDown="Windows_MiniMouseLeftButtonDown"
                  MouseEnter="Windows_MiniMouseEnter"  MouseLeave="Windows_MiniMouseLeave"/>
         <Ellipse Fill="DarkGreen" HorizontalAlignment="Left" Height="20" Margin="742,10,0,0" VerticalAlignment="Top" Width="20" Opacity="1"/>
-        <GroupBox x:Name="Temperatur1" Header="Temperatur" HorizontalAlignment="Left" Height="170" Margin="10,46,0,0" VerticalAlignment="Top" Width="363" Foreground="White" FontSize="20" BorderBrush="{x:Null}" Background="#FF31384D">
+        <GroupBox x:Name="Temperatur1" Header="Temperatur                  " HorizontalAlignment="Left" Height="170" Margin="10,46,0,0" VerticalAlignment="Top" Width="363" Foreground="White" FontSize="20" BorderBrush="{x:Null}" Background="#FF31384D">
             <Button x:Name="BTemperatur" Content="00.00°C" HorizontalAlignment="Center" Height="151.999" Margin="0" VerticalAlignment="Center" Width="353.333" Background="#FF31384D" BorderBrush="{x:Null}" 
-                    MouseDoubleClick="Button_Click" FontSize="72" Foreground="White" Focusable="False" IsTabStop="False" UseLayoutRounding="False" Style="{DynamicResource ButtonStyle}"/>
+                    MouseDoubleClick="Button_Click" FontSize="72" Foreground="White" Focusable="False" IsTabStop="False" UseLayoutRounding="False" Style="{DynamicResource ButtonStyle}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </GroupBox>
         <GroupBox Header="Gewicht" HorizontalAlignment="Left" Height="170" Margin="427,46,0,0" VerticalAlignment="Top" Width="363" Foreground="White" FontSize="20" BorderBrush="{x:Null}" Background="#FF31384D">
             <Button x:Name="BGewicht" Content="00.00kg" HorizontalAlignment="Center" Height="151.999" Margin="0" VerticalAlignment="Center" Width="353.333" Background="#FF31384D" BorderBrush="{x:Null}" 
@@ -88,7 +167,7 @@
         <Ellipse x:Name="ElGewicht" Fill="#FFC90D0D"   HorizontalAlignment="Left" Height="12" Margin="762,191,0,0" VerticalAlignment="Top" Width="12" Focusable="True" Visibility="Hidden"/>
         <Ellipse x:Name="ElAnemometer" Fill="#FFC90D0D"   HorizontalAlignment="Left" Height="12" Margin="348,389,0,0" VerticalAlignment="Top" Width="12" Focusable="True" Visibility="Hidden"/>
         <Ellipse x:Name="ElLuefter" Fill="#FFC90D0D"   HorizontalAlignment="Left" Height="12" Margin="762,389,0,0" VerticalAlignment="Top" Width="12" Focusable="True" Visibility="Hidden"/>
-        <Button Content="Einstellungen" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Style="{DynamicResource ButtonStyle_Setting}" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFD4D4D4" FontWeight="Bold" Click="Click_Einstellung">
+        <Button Content="Einstellungen" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Style="{DynamicResource ButtonStyle_Setting}" FontSize="14" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFD4D4D4" FontWeight="Bold" Click="Click_Einstellung" Cursor="Hand">
             <Button.Resources>
                 <Style x:Key="ButtonStyle_Setting" TargetType="{x:Type Button}">
                     <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -131,5 +210,23 @@
             </Button.ContextMenu>
         </Button>
         <TextBox HorizontalAlignment="Left" Margin="10,421,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Width="777" FontSize="15" Background="#FF39393C" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" Foreground="#FFA2A2A2" FontFamily="Arial"/>
+        <Expander x:Name="expander" Header="######" HorizontalAlignment="Left" Margin="122,50,0,0" VerticalAlignment="Top" Width="107" FontSize="20" Foreground="#FF17FF00" FontFamily="Courier New">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <CheckBox x:Name="checkBox0" Content="Motor0" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="1" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+                <CheckBox x:Name="checkBox1" Content="Motor1" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="1" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+                <CheckBox x:Name="checkBox2" Content="Motor2" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="2" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+                <CheckBox x:Name="checkBox3" Content="Motor3" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="3" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+                <CheckBox x:Name="checkBox4" Content="Motor4" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="4" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+                <CheckBox x:Name="checkBox5" Content="Motor5" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="5" Width="95" Background="#FF0CFF00" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
+            </Grid>
+        </Expander>
     </Grid>
 </Window>
