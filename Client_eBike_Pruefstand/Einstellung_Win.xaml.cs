@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,6 +60,7 @@ namespace Client_eBike_Pruefstand
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
+            for (int i = 0; i < textBoxes0.Count; i++)
                 if (textBoxes1[i].Text != RegistryHelper.RegistryGetString(textBoxes0[i].Text, ""))
                     OnEinstellungChanged(keyValuePairs);
             for (int i = 0; i < (textBoxes0.Count & textBoxes1.Count); i++)
