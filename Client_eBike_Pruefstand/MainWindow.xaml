@@ -210,23 +210,5 @@
             </Button.ContextMenu>
         </Button>
         <TextBox HorizontalAlignment="Left" Margin="10,421,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Width="777" FontSize="15" Background="#FF39393C" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" Foreground="#FFA2A2A2" FontFamily="Arial"/>
-        <Expander x:Name="expander" Header="######" HorizontalAlignment="Left" Margin="122,50,0,0" VerticalAlignment="Top" Width="107" FontSize="20" Foreground="#FF17FF00" FontFamily="Courier New">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <CheckBox x:Name="checkBox0" Content="Motor0" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="0" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-                <CheckBox x:Name="checkBox1" Content="Motor1" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="1" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-                <CheckBox x:Name="checkBox2" Content="Motor2" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="2" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-                <CheckBox x:Name="checkBox3" Content="Motor3" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="3" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-                <CheckBox x:Name="checkBox4" Content="Motor4" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="4" Width="95" Background="#FF0BEE20" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-                <CheckBox x:Name="checkBox5" Content="Motor5" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="5" Width="95" Background="#FF0CFF00" Style="{DynamicResource CheckBoxStyle}" Foreground="#FF17FF00" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="10,0,0,0" FontFamily="Courier New"/>
-            </Grid>
-        </Expander>
     </Grid>
 </Window>
