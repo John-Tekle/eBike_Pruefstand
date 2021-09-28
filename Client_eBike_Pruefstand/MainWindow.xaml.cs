@@ -49,7 +49,12 @@ namespace Client_eBike_Pruefstand
             {
                 einstellung_Win.IPAddress = RegistryHelper.RegistryGetString("IP Address", "");
             }
-            else einstellung_Win.IPAddress = Einstellung_Win.staticIp;
+            else
+            {
+                einstellung_Win.IPAddress = Einstellung_Win.staticIp;
+                RegistryHelper.RegistrySetString("IP Address", Einstellung_Win.staticIp);
+            }
+
             foreach (var checkBox in checkBoxes.Where(_checkBox => _checkBox.Content.ToString() == RegistryHelper.RegistryGetString("Last Checked", "")))
                 checkBox.IsChecked = true;
             #endregion
