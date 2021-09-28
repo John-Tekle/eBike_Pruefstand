@@ -40,7 +40,7 @@ namespace Client_eBike_Pruefstand
 
         public Einstellung_Win() 
         {
-            InitializeComponent();
+            InitializeComponent(); //
             textBoxes0 = new List<TextBox>() { temperatur0, temperatur1, temperatur2, temperatur3, temperatur4, temperatur5 };
             textBoxes1 = new List<TextBox>() { temperatur_0, temperatur_1, temperatur_2, temperatur_3, temperatur_4, temperatur_5 };
             keyValuePairs = new Dictionary<TextBox, TextBox>();
