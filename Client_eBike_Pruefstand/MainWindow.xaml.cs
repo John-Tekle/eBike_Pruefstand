@@ -24,31 +24,44 @@ namespace Client_eBike_Pruefstand
     {
         #region Members
         List<CheckBox> checkBoxes;
-        Connecting_Win startwin = new Connecting_Win();
+        Connecting_Win startwin;// = new Connecting_Win();
         Einstellung_Win einstellung_Win;
         private CheckBox currentcheckbox;
         #endregion
 
         public MainWindow()
         {
-            startwin.Show();
-            while (!startwin.ShowActivated) ;
+            //startwin.Show();
+            //while (!startwin.ShowActivated) ;
             InitializeComponent();
-            startwin.Close();
+            //startwin.Close();
             checkBoxes = new List<CheckBox>() { checkBox0, checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
             Einstellung_Win.EinstellungChanged += Einstellung_Win_EinstellungChanged;
             einstellung_Win = new Einstellung_Win();
 
             #region RegistryHelper
             for (int i = 0; i < 6; i++)
-                checkBoxes[i].Content = RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, "");
-            if (currentcheckbox != null) expander.Header = currentcheckbox.Content;
-            else expander.Header = "######";
-            expander.Header = RegistryHelper.RegistryGetString("Expander Header", "");
-            if (RegistryHelper.RegistryGetString("IP Address", "") != "")
             {
-                einstellung_Win.IPAddress = RegistryHelper.RegistryGetString("IP Address", "");
+                if (RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, string.Empty) != string.Empty)
+                    checkBoxes[i].Content = Einstellung_Win.textBoxes1[i].Text = 
+                        RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, string.Empty);
+                else
+                {
+                    checkBoxes[i].Content = Einstellung_Win.textBoxes1[i].Text = $"#####{i}";
+                    RegistryHelper.RegistrySetString(Einstellung_Win.textBoxes0[i].Text, $"#####{i}");
+                }
             }
+
+            if (RegistryHelper.RegistryGetString("Expander Header", string.Empty) != string.Empty)
+                expander.Header = RegistryHelper.RegistryGetString("Expander Header", string.Empty);
+            else
+            {
+                RegistryHelper.RegistrySetString("Expander Header", "######");
+                expander.Header = RegistryHelper.RegistryGetString("Expander Header", string.Empty);
+            }
+
+            if (RegistryHelper.RegistryGetString("IP Address", string.Empty) != string.Empty)
+                einstellung_Win.IPAddress = RegistryHelper.RegistryGetString("IP Address", string.Empty);
             else
             {
                 einstellung_Win.IPAddress = Einstellung_Win.staticIp;
@@ -73,8 +86,7 @@ namespace Client_eBike_Pruefstand
                         RegistryHelper.RegistrySetString("Expander Header", expander.Header);
                         RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
                     }
-                }
-                    
+                }   
             }
         }
 
@@ -128,7 +140,7 @@ namespace Client_eBike_Pruefstand
         #region Ellipse Close & Mini
         private void Windows_Close(object sender, MouseButtonEventArgs e)
         {
-            startwin.Close();
+            //startwin.Close();
             einstellung_Win.Close();
             this.Close();
         }
