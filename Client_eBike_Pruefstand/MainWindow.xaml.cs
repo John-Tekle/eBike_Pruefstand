@@ -29,6 +29,7 @@ namespace Client_eBike_Pruefstand
         private CheckBox currentcheckbox;
         #endregion
 
+        #region Constructors
         public MainWindow()
         {
             //startwin.Show();
@@ -38,12 +39,34 @@ namespace Client_eBike_Pruefstand
             checkBoxes = new List<CheckBox>() { checkBox0, checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
             Einstellung_Win.EinstellungChanged += Einstellung_Win_EinstellungChanged;
             einstellung_Win = new Einstellung_Win();
+            RegistryHelperConfiguration();
+        }
+        #endregion
 
-            #region RegistryHelper
+        private void Einstellung_Win_EinstellungChanged(object sender, EinstellungEventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text != checkBoxes[i].Name)
+                {
+                    checkBoxes[i].Content = e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text;
+                    if (currentcheckbox != null)
+                    {
+                        expander.Header = currentcheckbox.Content;
+                        RegistryHelper.RegistrySetString("Expander Header", expander.Header);
+                        RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
+                    }
+                }   
+            }
+        }
+
+        #region RegistryHelper
+        private void RegistryHelperConfiguration()
+        {
             for (int i = 0; i < 6; i++)
             {
                 if (RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, string.Empty) != string.Empty)
-                    checkBoxes[i].Content = Einstellung_Win.textBoxes1[i].Text = 
+                    checkBoxes[i].Content = Einstellung_Win.textBoxes1[i].Text =
                         RegistryHelper.RegistryGetString(Einstellung_Win.textBoxes0[i].Text, string.Empty);
                 else
                 {
@@ -70,25 +93,8 @@ namespace Client_eBike_Pruefstand
 
             foreach (var checkBox in checkBoxes.Where(_checkBox => _checkBox.Content.ToString() == RegistryHelper.RegistryGetString("Last Checked", "")))
                 checkBox.IsChecked = true;
-            #endregion
         }
-
-        private void Einstellung_Win_EinstellungChanged(object sender, EinstellungEventArgs e)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                if (e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text != checkBoxes[i].Name)
-                {
-                    checkBoxes[i].Content = e.TextBoxes[Einstellung_Win.textBoxes0[i]].Text;
-                    if (currentcheckbox != null)
-                    {
-                        expander.Header = currentcheckbox.Content;
-                        RegistryHelper.RegistrySetString("Expander Header", expander.Header);
-                        RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
-                    }
-                }   
-            }
-        }
+        #endregion
 
         #region Move WinApp using Mouse
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -184,11 +190,14 @@ namespace Client_eBike_Pruefstand
         }
         #endregion
 
+        #region Einstellung
         private void Click_Einstellung(object sender, RoutedEventArgs e)
         {
             einstellung_Win.ShowDialog();
         }
+        #endregion
 
+        #region CheckBox
         /// <summary>
         /// You can only select one at a time
         /// </summary>
@@ -203,7 +212,7 @@ namespace Client_eBike_Pruefstand
             RegistryHelper.RegistrySetString("Expander Header", expander.Header);
             RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
         }
-
+        
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             expander.IsExpanded = false;
@@ -213,5 +222,6 @@ namespace Client_eBike_Pruefstand
             RegistryHelper.RegistrySetString("Last Checked", "");
 
         }
+        #endregion 
     }
 }

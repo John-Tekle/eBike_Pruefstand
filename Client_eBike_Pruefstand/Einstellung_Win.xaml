@@ -36,7 +36,7 @@
                 <TextBox x:Name="setIPAddress" Height="26" Margin="0,10" TextWrapping="Wrap" Text="255.255.255.255" VerticalAlignment="Center" Background="{x:Null}" Foreground="#FF17FF00" SelectionBrush="{x:Null}" BorderBrush="{x:Null}" FontSize="16" MaxLength="15" IsUndoEnabled="True" VerticalContentAlignment="Center" FontFamily="Courier New" HorizontalContentAlignment="Center" VerticalScrollBarVisibility="Disabled" TabIndex="15"/>
             </Grid>
         </GroupBox>
-        <Button x:Name="okButton" Content="OK" Margin="91,279,91,0" VerticalAlignment="Top" Background="#FF595E68" BorderBrush="White" Foreground="White" FontWeight="Bold" Style="{DynamicResource ButtonStyle1}" Click="okButton_Click">
+        <Button x:Name="okButton" Content="OK" Margin="91,279,91,0" VerticalAlignment="Top" Background="#FF595E68" BorderBrush="White" Foreground="White" FontWeight="Bold" Style="{DynamicResource ButtonStyle1}" Click="okButton_Click" IsDefault="True">
             <Button.Resources>
                 <Style x:Key="FocusVisual">
                     <Setter Property="Control.Template">
