@@ -24,5 +24,10 @@ namespace Client_eBike_Pruefstand
         {
             InitializeComponent();
         }
+
+        private void MoveOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
     }
 }

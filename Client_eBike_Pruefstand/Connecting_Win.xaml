@@ -8,7 +8,7 @@
         Title="StartWin" Height="200" Width="400" WindowStartupLocation="CenterScreen" Background="{x:Null}" ResizeMode="NoResize" Visibility="Visible" Foreground="Black" AllowsTransparency="True" WindowStyle="None" ShowInTaskbar="False">
     <Grid HorizontalAlignment="Left" Height="200" VerticalAlignment="Top" Width="400">
         <Rectangle Fill="#FF2D2D34" HorizontalAlignment="Left" Height="200" RadiusY="13" RadiusX="13" VerticalAlignment="Top" Width="400" Opacity="0.5"/>
-        <Rectangle Fill="#FF39393C" HorizontalAlignment="Left" Height="180" RadiusY="13" RadiusX="13" VerticalAlignment="Top" Width="380" Margin="10,10,0,0" Opacity="0.95"/>
+        <Rectangle Fill="#FF39393C" HorizontalAlignment="Left" Height="180" RadiusY="13" RadiusX="13" VerticalAlignment="Top" Width="380" Margin="10,10,0,0" Opacity="0.95" MouseLeftButtonDown="MoveOnMouseLeftButtonDown"/>
         <control:LoadingAnimation HorizontalAlignment="Center" VerticalAlignment="Center" Margin="105.333,38.796,116,43.787" Height="117.417" Width="178.667"/>
     </Grid>
     
