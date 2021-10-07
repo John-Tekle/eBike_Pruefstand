@@ -146,6 +146,7 @@ namespace Client_eBike_Pruefstand
         #region Ellipse Close & Mini
         private void Windows_Close(object sender, MouseButtonEventArgs e)
         {
+            TCP_Client.Close();
             //startwin.Close();
             einstellung_Win.Close();
             this.Close();
@@ -190,7 +191,7 @@ namespace Client_eBike_Pruefstand
         }
         #endregion
 
-        #region Einstellung
+        #region Einstellung_Win
         private void Click_Einstellung(object sender, RoutedEventArgs e)
         {
             einstellung_Win.ShowDialog();

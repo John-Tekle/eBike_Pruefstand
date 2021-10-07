@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Service_eBike_Pruefstand
 {
@@ -27,6 +28,8 @@ namespace Service_eBike_Pruefstand
                 Gewicht = new Gewicht(ADC_MAX11617.Address.Gewicht, ADC_MAX11617.Channel.Gewicht);
                 Temperatur = new Temperatur(ADC_MAX11617.Address.Temperatur, ADC_MAX11617.Channel.TemperaturDefault);
                 Luefter = new Luefter(I2C_Address.Address.Luefter);
+                TCPServer.Initialization();
+                TCPServer.CommandReceived += TCPServer_CommandReceived;
             }
             catch(Exception e)
             {
@@ -41,6 +44,11 @@ namespace Service_eBike_Pruefstand
             Luefter.ValueChanged += Luefter_ValueChanged;
             Temperatur.TemperatureChanged += Temperatur_TemperatureChanged;
 
+        }
+
+        private void TCPServer_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
+        {
+            log.Log(NLog.LogLevel.Trace,e.Command);
         }
         #endregion
 

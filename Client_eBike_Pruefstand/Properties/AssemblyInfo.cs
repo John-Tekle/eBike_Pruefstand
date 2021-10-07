@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Client_eBike_Pruefstand")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("HSLU")]
 [assembly: AssemblyProduct("Client_eBike_Pruefstand")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
