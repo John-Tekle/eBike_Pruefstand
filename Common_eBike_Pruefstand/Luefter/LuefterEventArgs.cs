@@ -18,6 +18,7 @@ namespace Common_eBike_Pruefstand
 
         #region properties
         public byte Value { get; }
+        public string Name { get { return "Luefter"; } }
         #endregion
     }
 }

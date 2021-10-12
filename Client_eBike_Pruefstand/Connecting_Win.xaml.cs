@@ -24,7 +24,8 @@ namespace Client_eBike_Pruefstand
     {
         private static MainWindow MainWindow;
         private DispatcherTimer dispatcherTimer;
-        private static Thread t;
+        private Thread thread;
+        private static bool[] state;
 
         public Connecting_Win()
         {
@@ -33,8 +34,11 @@ namespace Client_eBike_Pruefstand
             {
                 MainWindow = new MainWindow();
                 dispatcherTimer = new DispatcherTimer();
-                this.Activated += new EventHandler(this.RunOnShown);
+                this.Activated += new EventHandler(this.RunOnShown); //Occurs when a window becomes the foreground window
                 TCP_Client.Initialization();
+                //MainWindow.ShowActivated = false;
+                state = new bool[2];
+                Dispatcher.Invoke(() => { MainWindow.ShowActivated = false; });
             }
             catch(Exception e)
             {
@@ -45,23 +49,48 @@ namespace Client_eBike_Pruefstand
 
         private void RunOnShown(object sender, EventArgs e)
         {
-            t = new Thread(RUN_MainWindow);
-            t.Start();
+            thread = new Thread(RUN);
+            thread.IsBackground = true;
+            thread.Start();
         }
 
-        private void RUN_MainWindow()
+        //[Obsolete]
+        private void RUN()
         {
-            dispatcherTimer.Tick += new EventHandler(dispatcherdispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
-            dispatcherTimer.Start();
-        }
-
-        private void dispatcherdispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            //TCP_Client.Connect();
-            MainWindow.Show();
-            while (!MainWindow.ShowActivated) ;
-            this.Close();
+            bool stopThread = true;
+            string exceptionMessage = string.Empty;
+            while (stopThread)
+            {
+                Thread.Sleep(5000);
+                try
+                {
+                    TCP_Client.Connect();
+                }
+                catch (Exception ex)
+                {
+                    exceptionMessage = ex.Message;
+                }
+                finally
+                {
+                    this.Dispatcher.Invoke(() => { state[0] = MainWindow.ShowActivated; });
+                    if (!state[0])
+                    {
+                        if(exceptionMessage != string.Empty)
+                            MessageBox.Show(exceptionMessage);
+                        this.Dispatcher.Invoke(() => { this.Close(); });
+                        MainWindow.Dispatcher.Invoke(() => { MainWindow.Show(); });
+                        MainWindow.Dispatcher.Invoke(() => { MainWindow.ShowActivated = true; });
+                    }
+                    if (TCP_Client.Connected)
+                    {
+                        stopThread = false;
+                    }
+                        this.Dispatcher.Invoke(() => { state[1] = this.ShowActivated; });
+                        if (!state[1])
+                        this.Dispatcher.Invoke(() => { this.Close(); });
+                }
+            }
+            
         }
 
         private void MoveOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

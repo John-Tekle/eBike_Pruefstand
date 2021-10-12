@@ -18,6 +18,7 @@ namespace Common_eBike_Pruefstand
 
         #region properties
         public float Load  { get; }
+        public string Name { get { return "Gewicht"; } }
         #endregion
     }
 }

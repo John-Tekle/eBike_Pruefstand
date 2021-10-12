@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Service_eBike_Pruefstand
 {
@@ -26,6 +20,7 @@ namespace Service_eBike_Pruefstand
             try
             {
                 PI = new Raspberry();
+                PI.ClientReceivedCommmnd += PI_ClientReceivedCommmnd;
                 this.Shown += new System.EventHandler(this.RunOnShown);
             }
             catch (Exception e)
@@ -34,6 +29,13 @@ namespace Service_eBike_Pruefstand
                 exMessage = e.Message;
                 log.Error(e.Message);
             }
+        }
+
+        private void PI_ClientReceivedCommmnd(object sender, Dictionary<string, float> keyValuePairs)
+        {
+            float f;
+            keyValuePairs.TryGetValue("Temperatur", out f);
+            MessageBox.Show("Temperatur" + f.ToString()) ;
         }
 
         private void RunOnShown(object sender, EventArgs e)

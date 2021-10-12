@@ -18,6 +18,7 @@ namespace Common_eBike_Pruefstand
 
         #region properties
         public float Temperature { get; private set; }
+        public string Name { get { return "Temperatur"; } }
         #endregion
     }
 }

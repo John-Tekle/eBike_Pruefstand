@@ -209,7 +209,7 @@
                 <ContextMenu/>
             </Button.ContextMenu>
         </Button>
-        <TextBox HorizontalAlignment="Left" Margin="10,421,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Width="777" FontSize="15" Background="#FF39393C" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" Foreground="#FFA2A2A2" FontFamily="Arial"/>
+        <TextBox x:Name="networkStatus" HorizontalAlignment="Left" Margin="10,421,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Width="777" FontSize="15" Background="#FF39393C" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" Foreground="#FFA2A2A2" FontFamily="Arial"/>
         <Expander x:Name="expander" Header="######" HorizontalAlignment="Left" Margin="122,50,0,0" VerticalAlignment="Top" Width="107" FontSize="20" Foreground="#FF17FF00" FontFamily="Courier New">
             <Grid>
                 <Grid.RowDefinitions>

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Text.Json;
 using System.Collections.Generic;
 
 namespace Service_eBike_Pruefstand
 {
+    public delegate void Notify(object sender, Dictionary<string, float> keyValuePairs);  // delegate
+
     public class Raspberry
     {
         #region members
@@ -17,6 +20,10 @@ namespace Service_eBike_Pruefstand
         private float gewicht = (float)99.99;//float.MaxValue;
         private byte luefter = 99;//float.MaxValue;
         private float temperatur = (float)99.99;//float.MaxValue;
+
+        public Dictionary<string, float> keyValuePairsCommmand { get; private set; }
+
+        public event Notify ClientReceivedCommmnd; // event
         #endregion
 
         #region constructor & destructor
@@ -36,7 +43,6 @@ namespace Service_eBike_Pruefstand
                 log.Error(e.Message);
                 throw e;
             }
-            
 
             //EventHandler
             Anemometer.SpeedChanged += Anemometer_SpeedChanged;
@@ -48,7 +54,12 @@ namespace Service_eBike_Pruefstand
 
         private void TCPServer_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
         {
-            log.Log(NLog.LogLevel.Trace,e.Command);
+            keyValuePairsCommmand = null;
+            try { 
+                keyValuePairsCommmand = JsonSerializer.Deserialize<Dictionary<string, float>>(e.Command);
+                ClientReceivedCommmnd?.Invoke(sender, keyValuePairsCommmand);
+            }
+            catch (Exception ex) { log.Error(ex.Message); }
         }
         #endregion
 
@@ -109,22 +120,31 @@ namespace Service_eBike_Pruefstand
 
         private void Temperatur_TemperatureChanged(object sender, Common_eBike_Pruefstand.TemperaturEventArgs e)
         {
-            throw new NotImplementedException("Temperatur");
+            SendCommandToClient(e.Name, e.Temperature);
         }
 
         private void Anemometer_SpeedChanged(object sender, Common_eBike_Pruefstand.AnemometerEventArgs e)
         {
-            throw new NotImplementedException("Anemometer");
+            SendCommandToClient(e.Name, e.Speed);
         }
 
         private void Gewicht_LoadChanged(object sender, Common_eBike_Pruefstand.GewichtEventArgs e)
         {
-            throw new NotImplementedException("Gewicht");
+            SendCommandToClient(e.Name, e.Load);
         }
 
         private void Luefter_ValueChanged(object sender, Common_eBike_Pruefstand.LuefterEventArgs e)
         {
-            throw new NotImplementedException("Luefter");
+            SendCommandToClient(e.Name, e.Value);
+        }
+
+        private void SendCommandToClient(string name, float value)
+        {
+            Dictionary<string, float> keyValuePairs = new Dictionary<string, float>
+            {
+                { name, value }
+            };
+            TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
         }
         #endregion
     }

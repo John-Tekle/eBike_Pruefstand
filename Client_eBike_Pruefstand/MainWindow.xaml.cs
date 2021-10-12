@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +25,6 @@ namespace Client_eBike_Pruefstand
     {
         #region Members
         List<CheckBox> checkBoxes;
-        Connecting_Win startwin;// = new Connecting_Win();
         Einstellung_Win einstellung_Win;
         private CheckBox currentcheckbox;
         #endregion
@@ -32,16 +32,18 @@ namespace Client_eBike_Pruefstand
         #region Constructors
         public MainWindow()
         {
-            //startwin.Show();
-            //while (!startwin.ShowActivated) ;
             InitializeComponent();
-            //startwin.Close();
             checkBoxes = new List<CheckBox>() { checkBox0, checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
             Einstellung_Win.EinstellungChanged += Einstellung_Win_EinstellungChanged;
             einstellung_Win = new Einstellung_Win();
             RegistryHelperConfiguration();
+            TCP_Client.ClientStatusUpdate += TCP_Client_ClientStatusUpdate;
         }
         #endregion
+        private void TCP_Client_ClientStatusUpdate(string ClientStatusUpdate)
+        {
+            this.networkStatus.Dispatcher.Invoke(() => { networkStatus.Text = ClientStatusUpdate; });
+        }
 
         private void Einstellung_Win_EinstellungChanged(object sender, EinstellungEventArgs e)
         {
@@ -137,9 +139,7 @@ namespace Client_eBike_Pruefstand
                     ElLuefter.Visibility = Visibility.Visible;
 
             }
-
             e.Handled = true; //Event marked as handled
-
         }
         #endregion
 
@@ -147,8 +147,8 @@ namespace Client_eBike_Pruefstand
         private void Windows_Close(object sender, MouseButtonEventArgs e)
         {
             TCP_Client.Close();
-            //startwin.Close();
-            einstellung_Win.Close();
+            if(einstellung_Win.ShowActivated)
+                einstellung_Win.Close();
             this.Close();
         }
 
@@ -221,7 +221,6 @@ namespace Client_eBike_Pruefstand
             expander.Header = "######";
             RegistryHelper.RegistrySetString("Expander Header", "######");
             RegistryHelper.RegistrySetString("Last Checked", "");
-
         }
         #endregion 
     }

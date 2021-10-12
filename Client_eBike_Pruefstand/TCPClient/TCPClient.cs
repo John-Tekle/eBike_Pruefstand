@@ -8,6 +8,7 @@ using Common_eBike_Pruefstand;
 
 namespace Client_eBike_Pruefstand
 {
+    public delegate void Notify(string s);  // delegate
     public static class TCP_Client
     {
         private static IPAddress IPAddress;
@@ -17,6 +18,14 @@ namespace Client_eBike_Pruefstand
         private static TcpClient client;
         private static NetworkStream networkStream;
         public static event EventHandler<TCPEventArgs> CommandReceived;
+        public static event Notify ClientStatusUpdate; // event
+        private static string ClientConnected = "Connected";
+        private static string ClientDisconnected = "Disconnected";
+
+        /// <returns>
+        /// true if the System.Net.Sockets.TcpClient.Client socket was connected to a remote resource as of the most recent operation; otherwise, false.
+        /// </returns> 
+        public static bool Connected => client.Connected;
 
         public static void Initialization(string ipaddress, Int32 port)
         {
@@ -25,10 +34,6 @@ namespace Client_eBike_Pruefstand
                 IPAddress = IPAddress.Parse(ipaddress);
                 IPEndPoint = new IPEndPoint(IPAddress, port);
                 client = new TcpClient();
-
-                Thread t = new Thread(Run);
-                t.IsBackground = true;
-                t.Start();
             }
             catch(Exception e)
             {
@@ -38,20 +43,28 @@ namespace Client_eBike_Pruefstand
 
         private static void Run()
         {
-            while (true)
+            Thread.Sleep(4500);
+            bool stop_thread = true;
+            while (stop_thread)
             {
-                Thread.Sleep(4500);
+                string receivedCommand;
                 try
                 {
-                    Connect();
-                    while (true)
-                    {
-                        ReceiveCommand();
-                    }
+                    receivedCommand = ReceiveCommand();
+                    if (string.IsNullOrEmpty(receivedCommand))
+                        throw new Exception("It was either disconnected the server or received zero value command");
+                    OnCommandReceived(receivedCommand);
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
+                    if (client.Connected)
+                    {
+                        _ = MessageBox.Show(e.Message);
+                    }
+                    //Trying to find out if server is disconnected
+                    ClientStatusUpdate?.Invoke(ClientDisconnected);
+                    Close();
+                    stop_thread = false;
                 }
             }
         }
@@ -69,6 +82,13 @@ namespace Client_eBike_Pruefstand
                 {
                     client.Connect(IPEndPoint);
                     networkStream = client.GetStream();
+
+                    Thread t = new Thread(Run)
+                    {
+                        IsBackground = true
+                    };
+                    t.Start();
+                    ClientStatusUpdate?.Invoke(ClientConnected);
                 }
                 catch (Exception e)
                 {
@@ -79,10 +99,13 @@ namespace Client_eBike_Pruefstand
 
         public static void Close()
         {
-            networkStream.Close();
-            networkStream.Dispose();
-            client.Close();
-            client.Dispose();
+            if(client.Connected)
+            {
+                networkStream.Close();
+                networkStream.Dispose();
+                client.Close();
+                client.Dispose();
+            }
         }
 
         public static string ReceiveCommand()
