@@ -26,7 +26,7 @@ namespace Client_eBike_Pruefstand
     {
         #region Members
         List<CheckBox> checkBoxes;
-        Einstellung_Win einstellung_Win;
+        public Einstellung_Win einstellung_Win;
         private CheckBox currentcheckbox;
         public Dictionary<string, bool> KeyValuePairsCommmand { get; private set; }
         #endregion

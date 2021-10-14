@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common_eBike_Pruefstand;
 
-namespace Common_eBike_Pruefstand
+namespace Service_eBike_Pruefstand
 {
-    public interface ILuefter
+    public interface IGewicht
     {
         #region events
-        event EventHandler<LuefterEventArgs> ValueChanged;
+        event EventHandler<GewichtEventArgs> LoadChanged;
         #endregion
 
 
         #region properties
-        byte Value { get; }
+        float Load { get; }
         #endregion
     }
 }

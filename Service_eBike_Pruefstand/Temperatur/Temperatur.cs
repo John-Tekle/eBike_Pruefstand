@@ -32,8 +32,9 @@ namespace Service_eBike_Pruefstand
         #endregion
 
         #region methodes
-        public bool Read(byte chan, out float temperatur)
+        public bool Read(ADC_MAX11617.Channel _chan, out float temperatur)
         {
+            byte chan = (byte)_chan;
             byte[] data = new byte[2];
             int length = 0;
 

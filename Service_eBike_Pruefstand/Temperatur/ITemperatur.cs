@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common_eBike_Pruefstand;
 
-namespace Common_eBike_Pruefstand
+namespace Service_eBike_Pruefstand
 {
     public interface ITemperatur
     {
@@ -18,7 +19,7 @@ namespace Common_eBike_Pruefstand
         #endregion
 
         #region Method
-        bool Read(byte chan, out float temperatur);
+        bool Read(ADC_MAX11617.Channel chan, out float temperatur);
         #endregion
     }
 }

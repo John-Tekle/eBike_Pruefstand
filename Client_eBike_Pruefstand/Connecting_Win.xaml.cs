@@ -33,7 +33,7 @@ namespace Client_eBike_Pruefstand
             {
                 MainWindow = new MainWindow();
                 this.Activated += new EventHandler(this.RunOnShown); //Occurs when a window becomes the foreground window
-                TCP_Client.Initialization();
+                TCP_Client.Initialization(MainWindow.einstellung_Win.IPAddress);
                 //MainWindow.ShowActivated = false;
                 state = new bool[2];
                 Dispatcher.Invoke(() => { MainWindow.ShowActivated = false; });

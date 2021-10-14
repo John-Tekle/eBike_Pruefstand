@@ -22,14 +22,8 @@ namespace Client_eBike_Pruefstand
         #region Members
         public string IPAddress
         {
-            get
-            {
-                return setIPAddress.Text;
-            }
-            set
-            {
-                setIPAddress.Text = value;
-            }
+            get => setIPAddress.Text;
+            set => setIPAddress.Text = value;
         }
         public const string staticIp = "192.168.0.1";
         public static List<TextBox> textBoxes0 { get; private set; }

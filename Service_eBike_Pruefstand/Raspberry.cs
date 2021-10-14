@@ -82,7 +82,7 @@ namespace Service_eBike_Pruefstand
             bool _return = false;
             try
             {
-                if (this.Temperatur.Read(Temperatur.Channel, out this.temperatur)) _return = true; else return false;
+                if (this.Temperatur.Read(ADC_MAX11617.Channel.TemperaturDefault, out this.temperatur)) _return = true; else return false;
                 if (this.Gewicht.Read(Gewicht.Channel, out this.gewicht)) _return = true; else return false;
                 if (this.Anemometer.Read(Anemometer.Channel, out this.anemometer)) _return = true; else return false;
                 if (this.Luefter.Read(out luefter)) _return = true; else return false;

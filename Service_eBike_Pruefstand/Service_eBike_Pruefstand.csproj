@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anemometer\Anemometer.cs" />
+    <Compile Include="Anemometer\IAnemometer.cs" />
     <Compile Include="Common\AnalogToDigital.cs" />
     <Compile Include="Common\I2C_Raspberry.cs" />
     <Compile Include="Common\IADC_MAX11617.cs" />
@@ -127,11 +128,14 @@
     </Compile>
     <Compile Include="Common\I2C_Extensions.cs" />
     <Compile Include="Gewicht\Gewicht.cs" />
+    <Compile Include="Gewicht\IGewicht.cs" />
+    <Compile Include="Luefter\ILuefter.cs" />
     <Compile Include="Luefter\Luefter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Raspberry.cs" />
     <Compile Include="TCPServer.cs" />
+    <Compile Include="Temperatur\ITemperatur.cs" />
     <Compile Include="Temperatur\Temperatur.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -145,6 +149,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Luefter\packages.config" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
