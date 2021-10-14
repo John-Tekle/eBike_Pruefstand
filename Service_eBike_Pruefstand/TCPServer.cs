@@ -8,6 +8,7 @@ using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
 {
+    public delegate void NotifyOnAcceptedTcpClient();  // delegate
     public static class TCPServer
     {
         public const Int32 Default_port = 13000;
@@ -17,6 +18,7 @@ namespace Service_eBike_Pruefstand
         private static NetworkStream networkStream;
         private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
         public static event EventHandler<TCPEventArgs> CommandReceived;
+        public static event NotifyOnAcceptedTcpClient NotifyOnAcceptedTcpClient;
 
         public static void Initialization(Int32 port)
         {
@@ -53,6 +55,8 @@ namespace Service_eBike_Pruefstand
                     client = server.AcceptTcpClient();
                     log.Info(client.Client.RemoteEndPoint);
                     networkStream = client.GetStream();
+                    Thread.Sleep(2000);
+                    NotifyOnAcceptedTcpClient?.Invoke();
                     string receivedCommand;
                     while (true)
                     {
@@ -93,10 +97,13 @@ namespace Service_eBike_Pruefstand
 
         public static void SendCommand(string s)
         {
-            StreamWriter streamWriter = new StreamWriter(networkStream);
-            //streamWriter.AutoFlush = true;
+            StreamWriter streamWriter = new StreamWriter(networkStream)
+            {
+                AutoFlush = true
+            };
             try
             {
+                Thread.Sleep(50);
                 streamWriter.WriteLine(s);
                 streamWriter.Flush();
             }

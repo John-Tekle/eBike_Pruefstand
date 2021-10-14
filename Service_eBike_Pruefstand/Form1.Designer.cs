@@ -149,12 +149,12 @@ namespace Service_eBike_Pruefstand
             this.MessagesText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(45)))), ((int)(((byte)(60)))));
             this.MessagesText.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.MessagesText.Enabled = false;
-            this.MessagesText.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MessagesText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MessagesText.ForeColor = System.Drawing.Color.Red;
             this.MessagesText.Location = new System.Drawing.Point(12, 1029);
             this.MessagesText.Name = "MessagesText";
             this.MessagesText.ReadOnly = true;
-            this.MessagesText.Size = new System.Drawing.Size(1635, 22);
+            this.MessagesText.Size = new System.Drawing.Size(1635, 25);
             this.MessagesText.TabIndex = 1;
             this.MessagesText.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -174,6 +174,7 @@ namespace Service_eBike_Pruefstand
             this.Name = "eBIKE";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "e-BIKE Prüfstand";
+            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Temperatur.ResumeLayout(false);
             this.Temperatur.PerformLayout();

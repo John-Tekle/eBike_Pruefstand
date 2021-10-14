@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Service_eBike_Pruefstand
 {
-    public delegate void Notify(object sender, Dictionary<string, float> keyValuePairs);  // delegate
+    public delegate void Notify(object sender, Dictionary<string, bool> keyValuePairs);  // delegate
 
     public class Raspberry
     {
@@ -21,9 +21,16 @@ namespace Service_eBike_Pruefstand
         private byte luefter = 99;//float.MaxValue;
         private float temperatur = (float)99.99;//float.MaxValue;
 
-        public Dictionary<string, float> keyValuePairsCommmand { get; private set; }
+        public Dictionary<string, bool> KeyValuePairsCommmand { get; private set; }
+        public Dictionary<string, bool> keyValuePairsUpdate = new Dictionary<string, bool>
+            {
+                { "Temperature" ,false },
+                { "Gewicht" ,false },
+                { "Anemometer" ,false },
+                { "Luefter" ,false },
+            };
 
-        public event Notify ClientReceivedCommmnd; // event
+    public event Notify CommandToGUI; // event
         #endregion
 
         #region constructor & destructor
@@ -36,30 +43,28 @@ namespace Service_eBike_Pruefstand
                 Temperatur = new Temperatur(ADC_MAX11617.Address.Temperatur, ADC_MAX11617.Channel.TemperaturDefault);
                 Luefter = new Luefter(I2C_Address.Address.Luefter);
                 TCPServer.Initialization();
-                TCPServer.CommandReceived += TCPServer_CommandReceived;
             }
             catch(Exception e)
             {
                 log.Error(e.Message);
                 throw e;
             }
-
             //EventHandler
             Anemometer.SpeedChanged += Anemometer_SpeedChanged;
             Gewicht.LoadChanged += Gewicht_LoadChanged;
             Luefter.ValueChanged += Luefter_ValueChanged;
             Temperatur.TemperatureChanged += Temperatur_TemperatureChanged;
 
+            TCPServer.CommandReceived += TCPServer_CommandReceived;
+            TCPServer.NotifyOnAcceptedTcpClient += TCPServer_NotifyOnAcceptedTcpClient;
         }
 
-        private void TCPServer_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
+        private void TCPServer_NotifyOnAcceptedTcpClient()
         {
-            keyValuePairsCommmand = null;
-            try { 
-                keyValuePairsCommmand = JsonSerializer.Deserialize<Dictionary<string, float>>(e.Command);
-                ClientReceivedCommmnd?.Invoke(sender, keyValuePairsCommmand);
+            foreach(KeyValuePair<string, bool> keyValuePairs in keyValuePairsUpdate)
+            {
+                SendCommand(keyValuePairs.Key, keyValuePairs.Value);
             }
-            catch (Exception ex) { log.Error(ex.Message); }
         }
         #endregion
 
@@ -145,6 +150,55 @@ namespace Service_eBike_Pruefstand
                 { name, value }
             };
             TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
+        }
+        public void SendCommand(string name, bool value)
+        {
+            Dictionary<string, bool> keyValuePairs = new Dictionary<string, bool>
+            {
+                { $"Logger+{name}+ACK: ", value }
+            };
+            TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
+        }
+        private void TCPServer_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
+        {
+            KeyValuePairsCommmand = null;
+            try
+            {
+                KeyValuePairsCommmand = JsonSerializer.Deserialize<Dictionary<string, bool>>(e.Command);
+                foreach (KeyValuePair<string, bool> res in KeyValuePairsCommmand)
+                {
+                    if(res.Key.Substring(0, 6) == "Logger")
+                    {
+                        switch (res.Key.Substring(0, (int)(res.Key.Length - 2)))
+                        {
+                            case "Logger+Temperature":
+                                OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                break;
+                            case "Logger+Gewicht":
+                                OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                break;
+                            case "Logger+Anemometer":
+                                OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                break;
+                            case "Logger+Luefter":
+                                OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                break;
+                            default:
+                                log.Error($"The given key '{res.Key}' could not processed.");
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) 
+            { 
+                log.Error(ex.Message); 
+            }
+        }
+        //Updating GUI Value
+        private void OnCommandToGUI(object sender, Dictionary<string, bool> keyValuePairsCommmand)
+        {
+            CommandToGUI?.Invoke(sender, keyValuePairsCommmand);
         }
         #endregion
     }

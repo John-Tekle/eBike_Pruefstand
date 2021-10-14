@@ -21,6 +21,7 @@ namespace Client_eBike_Pruefstand
         public static event Notify ClientStatusUpdate; // event
         private static string ClientConnected = "Connected";
         private static string ClientDisconnected = "Disconnected";
+        private static Thread thread;
 
         /// <returns>
         /// true if the System.Net.Sockets.TcpClient.Client socket was connected to a remote resource as of the most recent operation; otherwise, false.
@@ -43,7 +44,7 @@ namespace Client_eBike_Pruefstand
 
         private static void Run()
         {
-            Thread.Sleep(4500);
+            Thread.Sleep(2000);
             bool stop_thread = true;
             while (stop_thread)
             {
@@ -59,7 +60,7 @@ namespace Client_eBike_Pruefstand
                 {
                     if (client.Connected)
                     {
-                        _ = MessageBox.Show(e.Message);
+                       // _ = MessageBox.Show(e.Message);
                     }
                     //Trying to find out if server is disconnected
                     ClientStatusUpdate?.Invoke(ClientDisconnected);
@@ -67,13 +68,19 @@ namespace Client_eBike_Pruefstand
                     stop_thread = false;
                 }
             }
+            thread.Abort();
         }
 
         public static void Initialization()
         {
             Initialization(Default_IPAddress,Default_port);
         }
-        
+
+        public static void Initialization(string ip)
+        {
+            Initialization(ip, Default_port);
+        }
+
         public static void Connect()
         {
             if (!client.Connected)
@@ -83,11 +90,11 @@ namespace Client_eBike_Pruefstand
                     client.Connect(IPEndPoint);
                     networkStream = client.GetStream();
 
-                    Thread t = new Thread(Run)
+                    thread = new Thread(Run)
                     {
                         IsBackground = true
                     };
-                    t.Start();
+                    thread.Start();
                     ClientStatusUpdate?.Invoke(ClientConnected);
                 }
                 catch (Exception e)

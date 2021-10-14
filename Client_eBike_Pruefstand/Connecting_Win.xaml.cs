@@ -23,7 +23,6 @@ namespace Client_eBike_Pruefstand
     public partial class Connecting_Win : Window
     {
         private static MainWindow MainWindow;
-        private DispatcherTimer dispatcherTimer;
         private Thread thread;
         private static bool[] state;
 
@@ -33,7 +32,6 @@ namespace Client_eBike_Pruefstand
             try
             {
                 MainWindow = new MainWindow();
-                dispatcherTimer = new DispatcherTimer();
                 this.Activated += new EventHandler(this.RunOnShown); //Occurs when a window becomes the foreground window
                 TCP_Client.Initialization();
                 //MainWindow.ShowActivated = false;
@@ -49,8 +47,10 @@ namespace Client_eBike_Pruefstand
 
         private void RunOnShown(object sender, EventArgs e)
         {
-            thread = new Thread(RUN);
-            thread.IsBackground = true;
+            thread = new Thread(RUN)
+            {
+                IsBackground = true
+            };
             thread.Start();
         }
 
@@ -90,6 +90,7 @@ namespace Client_eBike_Pruefstand
                         this.Dispatcher.Invoke(() => { this.Close(); });
                 }
             }
+            thread.Abort();
             
         }
 

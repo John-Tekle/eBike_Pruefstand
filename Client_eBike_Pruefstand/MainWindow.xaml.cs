@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Microsoft.Win32;
 
 namespace Client_eBike_Pruefstand
@@ -27,6 +28,7 @@ namespace Client_eBike_Pruefstand
         List<CheckBox> checkBoxes;
         Einstellung_Win einstellung_Win;
         private CheckBox currentcheckbox;
+        public Dictionary<string, bool> KeyValuePairsCommmand { get; private set; }
         #endregion
 
         #region Constructors
@@ -38,8 +40,46 @@ namespace Client_eBike_Pruefstand
             einstellung_Win = new Einstellung_Win();
             RegistryHelperConfiguration();
             TCP_Client.ClientStatusUpdate += TCP_Client_ClientStatusUpdate;
+            TCP_Client.CommandReceived += TCP_Client_CommandReceived;
+            //Expander is disabled until the connection is established
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { expander.IsEnabled = false; })); //=  BTemperatur.IsEnabled = BGewicht.IsEnabled = BAnemometer.IsEnabled = BLuefter.IsEnabled 
         }
         #endregion
+
+        private void TCP_Client_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
+        {
+            KeyValuePairsCommmand = null;
+            try
+            {
+                KeyValuePairsCommmand = JsonSerializer.Deserialize<Dictionary<string, bool>>(e.Command);
+                foreach (KeyValuePair<string, bool> res in KeyValuePairsCommmand)
+                {
+                    if (res.Key.Substring(0, 6) == "Logger")
+                    {
+                        switch (res.Key.Substring(0, (int)(res.Key.Length - 2)))
+                        {
+                            case "Logger+Gewicht+ACK": UpdateEllipseState(res, ElGewicht); break;
+                            case "Logger+Anemometer+ACK": UpdateEllipseState(res, ElAnemometer); break;
+                            case "Logger+Luefter+ACK": UpdateEllipseState(res, ElLuefter); break;
+                            case "Logger+Temperature+ACK":
+                                //Not allowed changing temperature channel during Logging
+                                if (res.Value) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                { expander.IsEnabled = false; }));
+                                else Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                { expander.IsEnabled = true; }));
+                                UpdateEllipseState(res, ElTemperatur); break;
+                            default: break;
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         private void TCP_Client_ClientStatusUpdate(string ClientStatusUpdate)
         {
             this.networkStatus.Dispatcher.Invoke(() => { networkStatus.Text = ClientStatusUpdate; });
@@ -105,41 +145,41 @@ namespace Client_eBike_Pruefstand
         }
         #endregion
 
-        #region Log_Ellipse
-        private void Button_Click(object sender, RoutedEventArgs e)
+        #region Log and Ellipses
+        private void LogButtonOnClick(object sender, RoutedEventArgs e)
         {
             if(sender == BTemperatur)
-            {
-                if (ElTemperatur.Visibility == Visibility.Visible)
-                    ElTemperatur.Visibility = Visibility.Hidden;
-                else if (ElTemperatur.Visibility == Visibility.Hidden)
-                    ElTemperatur.Visibility = Visibility.Visible;
-            }
+                SendEllipseState(ElTemperatur, "Temperature");
             else if(sender == BGewicht)
-            {
-                if (ElGewicht.Visibility == Visibility.Visible)
-                    ElGewicht.Visibility = Visibility.Hidden;
-                else if (ElGewicht.Visibility == Visibility.Hidden)
-                    ElGewicht.Visibility = Visibility.Visible;
-
-            }
+                SendEllipseState(ElGewicht, "Gewicht");
             else if (sender == BAnemometer)
-            {
-                if (ElAnemometer.Visibility == Visibility.Visible)
-                    ElAnemometer.Visibility = Visibility.Hidden;
-                else if (ElAnemometer.Visibility == Visibility.Hidden)
-                    ElAnemometer.Visibility = Visibility.Visible;
-
-            }
+                SendEllipseState(ElAnemometer, "Anemometer");
             else if (sender == BLuefter)
-            {
-                if (ElLuefter.Visibility == Visibility.Visible)
-                    ElLuefter.Visibility = Visibility.Hidden;
-                else if (ElLuefter.Visibility == Visibility.Hidden)
-                    ElLuefter.Visibility = Visibility.Visible;
-
-            }
+                SendEllipseState(ElLuefter, "Luefter");
             e.Handled = true; //Event marked as handled
+        }
+        private void SendEllipseState(Ellipse ellipse, string name)
+        {
+            if (ellipse.Visibility == Visibility.Visible)
+                SendLogCommand(name, false);
+            else if (ellipse.Visibility == Visibility.Hidden)
+                SendLogCommand(name, true);
+        }
+        
+        private void UpdateEllipseState(KeyValuePair<string, bool> keyValuePair, Ellipse ellipse)
+        {
+            if (keyValuePair.Value) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { ellipse.Visibility = Visibility.Visible; }));
+            else Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { ellipse.Visibility = Visibility.Hidden; }));
+        }
+        private void SendLogCommand(string name, bool value)
+        {
+            Dictionary<string, bool> keyValuePairs = new Dictionary<string, bool>
+            {
+                { $"Logger+{name}: ", value }
+            };
+            TCP_Client.SendCommand(JsonSerializer.Serialize(keyValuePairs));
         }
         #endregion
 

@@ -10,8 +10,11 @@ namespace Service_eBike_Pruefstand
         #region members
         private Raspberry PI { get; }
         private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
-        private static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
-        String exMessage = string.Empty;
+        private static readonly System.Windows.Forms.Timer clearMessageTimer = new System.Windows.Forms.Timer();
+        private static readonly System.Windows.Forms.Timer headerLogTimer = new System.Windows.Forms.Timer();
+        private static bool[] logState = new bool[4];
+        private static bool logStateColor = true;
+        private string exMessage = string.Empty;
         #endregion
 
         public eBIKE()
@@ -20,7 +23,7 @@ namespace Service_eBike_Pruefstand
             try
             {
                 PI = new Raspberry();
-                PI.ClientReceivedCommmnd += PI_ClientReceivedCommmnd;
+                PI.CommandToGUI += PI_CommandToGUI; ;
                 this.Shown += new System.EventHandler(this.RunOnShown);
             }
             catch (Exception e)
@@ -29,13 +32,11 @@ namespace Service_eBike_Pruefstand
                 exMessage = e.Message;
                 log.Error(e.Message);
             }
-        }
-
-        private void PI_ClientReceivedCommmnd(object sender, Dictionary<string, float> keyValuePairs)
-        {
-            float f;
-            keyValuePairs.TryGetValue("Temperatur", out f);
-            MessageBox.Show("Temperatur" + f.ToString()) ;
+            
+            //Blink every 1s
+            headerLogTimer.Tick += new EventHandler(HeaderLogTimerBlink);
+            headerLogTimer.Interval = 1000;
+            headerLogTimer.Enabled = true;
         }
 
         private void RunOnShown(object sender, EventArgs e)
@@ -55,9 +56,9 @@ namespace Service_eBike_Pruefstand
 
         private void PI_Run()
         {
-            myTimer.Tick += new EventHandler(TimerEventProcessor);
-            myTimer.Interval = 5000;
-            myTimer.Enabled = true;
+            clearMessageTimer.Tick += new EventHandler(TimerEventProcessor);
+            clearMessageTimer.Interval = 5000;
+            clearMessageTimer.Enabled = true;
             while (true)
             {
                 try
@@ -72,12 +73,12 @@ namespace Service_eBike_Pruefstand
                     else
                     {
                         Invoke(new Action(() => MessagesText.Text = "Something went wrong!"));
-                        myTimer.Start();
+                        clearMessageTimer.Start();
                     }
                 }
                 catch(Exception e)
                 {
-                    myTimer.Start();
+                    clearMessageTimer.Start();
                     Invoke(new Action(() => MessagesText.Text = e.Message));
                 }
                 finally
@@ -91,8 +92,89 @@ namespace Service_eBike_Pruefstand
         private void TimerEventProcessor(object sender, EventArgs e)
         {
             Invoke(new Action(() => MessagesText.Clear()));
-            myTimer.Stop();
-            myTimer.Enabled = true;
+            clearMessageTimer.Stop();
+            clearMessageTimer.Enabled = true;
         }
+
+        private void PI_CommandToGUI(object sender, Dictionary<string, bool> keyValuePairs)
+        {
+            foreach (KeyValuePair<string, bool> _keyValuePairs in keyValuePairs)
+            {
+                switch (_keyValuePairs.Key)
+                {
+                    case "Logger+Temperature: ":
+                        UpdateCommandToGUI(0,"Temperature", _keyValuePairs, Temperatur);
+                        break;
+                    case "Logger+Gewicht: ":
+                        UpdateCommandToGUI(1, "Gewicht", _keyValuePairs, Gewicht);
+                        break;
+                    case "Logger+Anemometer: ":
+                        UpdateCommandToGUI(2, "Anemometer", _keyValuePairs, Anemometer);
+                        break;
+                    case "Logger+Luefter: ":
+                        UpdateCommandToGUI(3, "Luefter", _keyValuePairs, Lufter);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            headerLogTimer.Start();
+        }
+
+        private void UpdateCommandToGUI(int i, string name, KeyValuePair<string, bool> keyValuePairs, GroupBox groupBox)
+        {
+            if (keyValuePairs.Value)
+            {
+                logState[i] = true;
+                PI.SendCommand(name, true);
+            }
+            else if (!keyValuePairs.Value)
+            {
+                logState[i] = false;
+                _ = Invoke(new Action(() => groupBox.ForeColor = System.Drawing.Color.White));
+                PI.SendCommand(name, false);
+            }
+
+            try
+            {
+                PI.keyValuePairsUpdate[name] = keyValuePairs.Value;
+                //keyValuePairs.Key.Substring(7, (int)(keyValuePairs.Key.Length - 2))
+            }
+            catch (Exception e)
+            {
+                log.Error("e" + e.Message);
+            }
+            
+        }
+
+        private void HeaderLogTimerBlink(object sender, EventArgs e)
+        {
+            headerLogTimer.Stop();
+            if (logStateColor)
+            {
+                UpdateHeaderColor(System.Drawing.Color.Red);
+                logStateColor = false;
+            }
+            else if(!logStateColor)
+            {
+                UpdateHeaderColor(System.Drawing.Color.White);
+                logStateColor = true;
+            }
+            headerLogTimer.Enabled = true;
+            headerLogTimer.Start();
+        }
+
+        private void UpdateHeaderColor(System.Drawing.Color color)
+        {
+            if (logState[0])
+                _ = Invoke(new Action(() => Temperatur.ForeColor = color));
+            if (logState[1])
+                _ = Invoke(new Action(() => Gewicht.ForeColor = color));
+            if (logState[2])
+                _ = Invoke(new Action(() => Anemometer.ForeColor = color));
+            if (logState[3])
+                _ = Invoke(new Action(() => Lufter.ForeColor = color));
+        }
+
     }
 }
