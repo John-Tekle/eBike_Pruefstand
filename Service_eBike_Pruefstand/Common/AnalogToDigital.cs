@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
@@ -13,7 +14,7 @@ namespace Service_eBike_Pruefstand
         #region constructor & destructor
         public AnalogToDigital(ADC_MAX11617.Address addr): base(addr)
         {
-
+            WriteSetupByte();
         }
         #endregion
 
@@ -24,26 +25,28 @@ namespace Service_eBike_Pruefstand
         #region methodes
         public bool WriteSetupByte()
         {
-            byte[] command = new byte[1] { 0x82 }; //Look page 14 Table 1. Setup Byte Format
-            command[1] = (byte)(command[1] & 0b11111111); // Register bit. 1 = setup byte
+            byte[] command = new byte[1] { 0x80 }; //Look page 14 Table 1. Setup Byte Format
+            command[0] = (byte)(command[0] & 0b11111111); // Register bit. 1 = setup byte
             int result = ADC_Device.Write(command, command.Length);
             if (result != 1)
             {
-                log.Error("Error write command to MAX11617, ErrorCode:" + result);
+                log.Error("Error writing SetupByte command to MAX11617, ErrorCode:" + result);
                 return false;
             }
             return true;
         }
 
-        public bool WriteConfigByte(byte command_)
+        public bool WriteConfigByte(byte channel)
         {
             byte[] command = new byte[1];
-            command[0] = command_;
-            command[0] = (byte)(command[0] & 0b01111111); // Register bit. 1 = configuration byte
+            command[0] = channel;
+            command[0] = (byte)(command[0] & 0b01111111); // Register bit. 0 = configuration byte
+            //byte[] temp = new byte[1];  temp[0] = 0b00100001;
+            command[0] = (byte)(((byte)((channel &= 0x07) << 1)) | 0b00100001);
             int result = ADC_Device.Write(command, command.Length);
             if (result != 1)
             {
-                log.Error("Error write command to MAX11617, ErrorCode:" + result);
+                log.Error("Error writing Configuration command to MAX11617, ErrorCode:" + result);
                 return false;
             }
             return true;

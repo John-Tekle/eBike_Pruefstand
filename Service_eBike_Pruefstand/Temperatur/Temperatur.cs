@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Windows.Forms;
 using Common_eBike_Pruefstand;
 
 namespace Service_eBike_Pruefstand
@@ -42,16 +43,17 @@ namespace Service_eBike_Pruefstand
             {
                 if (WriteConfigByte(chan))
                 {
-                    Thread.Sleep(1);
+                    //Thread.Sleep(1);
                     if (!ReadResult(out data, out length))
                     {
                         log.Error("Reading data from MAX11617, Channel to read: " + chan);
                         temperatur = float.MaxValue;
                         return false;
                     }
-                    UInt16 sensorValue = (UInt16)((data[0] << 8) | data[1]);
-                    float sensorVoltage = (float)(3.30 / 4095.0) * sensorValue;
-                    temperatur = (float)((sensorVoltage - (float)1.2379) / (float)0.005);
+                    UInt16 sensorValue = (UInt16)(((data[0] << 8) | data[1]) & 0b0000111111111111);
+                    double sensorVoltage = (double)(3.2864 / 4095.0) * sensorValue;
+                    temperatur = (float)((sensorVoltage - 1.2437) / 0.005);
+                    if (chan != 0) temperatur -= (float)2.0; //Offset for channels 1..5
                     temperatur = (float)Math.Round(temperatur, 2);
                     return true;
                 }

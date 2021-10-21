@@ -106,17 +106,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Einstellung\Einstellung_Win.xaml.cs">
+    <Compile Include="Anemometer\Anemometer.cs" />
+    <Compile Include="Connector\Connector.cs" />
+    <Compile Include="Einstellung Window\Einstellung_Win.xaml.cs">
       <DependentUpon>Einstellung_Win.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Gewicht\Gewicht.cs" />
     <Compile Include="LoadingAnimation\Block.xaml.cs" />
     <Compile Include="LoadingAnimation\LoadingAnimation.xaml.cs" />
-    <Compile Include="Connecting\Connecting_Win.xaml.cs">
+    <Compile Include="Connecting Window\Connecting_Win.xaml.cs">
       <DependentUpon>Connecting_Win.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Luefter\Luefter.cs" />
     <Compile Include="RegistryHelper\RegistryHelper.cs" />
     <Compile Include="TCPClient\TCPClient.cs" />
-    <Page Include="Einstellung\Einstellung_Win.xaml">
+    <Compile Include="Temperatur\Temperatur.cs" />
+    <Page Include="Einstellung Window\Einstellung_Win.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,7 +143,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Connecting\Connecting_Win.xaml">
+    <Page Include="Connecting Window\Connecting_Win.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -191,5 +196,6 @@
       <Name>Common_eBike_Pruefstand</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

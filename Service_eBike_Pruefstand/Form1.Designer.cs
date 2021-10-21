@@ -174,7 +174,6 @@ namespace Service_eBike_Pruefstand
             this.Name = "eBIKE";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "e-BIKE Prüfstand";
-            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Temperatur.ResumeLayout(false);
             this.Temperatur.PerformLayout();

@@ -1,21 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using Microsoft.Win32;
 
 namespace Client_eBike_Pruefstand
 {
@@ -28,61 +20,64 @@ namespace Client_eBike_Pruefstand
         List<CheckBox> checkBoxes;
         public Einstellung_Win einstellung_Win;
         private CheckBox currentcheckbox;
-        public Dictionary<string, bool> KeyValuePairsCommmand { get; private set; }
         #endregion
 
         #region Constructors
         public MainWindow()
         {
             InitializeComponent();
+            this.ShowActivated = false; //The default value is true, so it must be false at the beginning.
             checkBoxes = new List<CheckBox>() { checkBox0, checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
             Einstellung_Win.EinstellungChanged += Einstellung_Win_EinstellungChanged;
             einstellung_Win = new Einstellung_Win();
             RegistryHelperConfiguration();
-            TCP_Client.ClientStatusUpdate += TCP_Client_ClientStatusUpdate;
-            TCP_Client.CommandReceived += TCP_Client_CommandReceived;
+            Connector.ClientStatusUpdater += Connector_ClientStatusUpdater;
+            Connector.Initialization();
+            Connector.EllipseUpdater += Connector_EllipseUpdater;
             //Expander is disabled until the connection is established
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            { expander.IsEnabled = false; })); //=  BTemperatur.IsEnabled = BGewicht.IsEnabled = BAnemometer.IsEnabled = BLuefter.IsEnabled 
+            { expander.IsEnabled = false; }));
+            Temperatur.TemperatureChanged += Temperatur_TemperatureChanged;
+            Gewicht.LoadChanged += Gewicht_LoadChanged;
+            Anemometer.SpeedChanged += Anemometer_SpeedChanged;
         }
         #endregion
-
-        private void TCP_Client_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
+        private void Temperatur_TemperatureChanged(object sender, Common_eBike_Pruefstand.TemperaturEventArgs e)
         {
-            KeyValuePairsCommmand = null;
-            try
-            {
-                KeyValuePairsCommmand = JsonSerializer.Deserialize<Dictionary<string, bool>>(e.Command);
-                foreach (KeyValuePair<string, bool> res in KeyValuePairsCommmand)
-                {
-                    if (res.Key.Substring(0, 6) == "Logger")
-                    {
-                        switch (res.Key.Substring(0, (int)(res.Key.Length - 2)))
-                        {
-                            case "Logger+Gewicht+ACK": UpdateEllipseState(res, ElGewicht); break;
-                            case "Logger+Anemometer+ACK": UpdateEllipseState(res, ElAnemometer); break;
-                            case "Logger+Luefter+ACK": UpdateEllipseState(res, ElLuefter); break;
-                            case "Logger+Temperature+ACK":
-                                //Not allowed changing temperature channel during Logging
-                                if (res.Value) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                { expander.IsEnabled = false; }));
-                                else Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                { expander.IsEnabled = true; }));
-                                UpdateEllipseState(res, ElTemperatur); break;
-                            default: break;
-                        }
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { BTemperatur.Content = $"{e.Temperature:0.00}°C"; }));
         }
-
-        private void TCP_Client_ClientStatusUpdate(string ClientStatusUpdate)
+        private void Gewicht_LoadChanged(object sender, Common_eBike_Pruefstand.GewichtEventArgs e)
         {
-            this.networkStatus.Dispatcher.Invoke(() => { networkStatus.Text = ClientStatusUpdate; });
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { BGewicht.Content = $"{e.Load:0.00}Kg"; }));
+        }
+        private void Anemometer_SpeedChanged(object sender, Common_eBike_Pruefstand.AnemometerEventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            { BAnemometer.Content = $"{e.Speed:0.00}m/s"; }));
+        }
+        private void Connector_ClientStatusUpdater(string clientStatusUpdate)
+        {
+            this.networkStatus.Dispatcher.Invoke(() => { networkStatus.Text = clientStatusUpdate; });
+        }
+        private void Connector_EllipseUpdater(KeyValuePair<string, object> res)
+        {
+            bool keyValuePair = bool.Parse(res.Value.ToString());
+            switch (res.Key.Substring(0, (int)(res.Key.Length - 2)))
+            {
+                case "Logger+Gewicht+ACK": UpdateEllipseState(keyValuePair,ElGewicht); break;
+                case "Logger+Anemometer+ACK": UpdateEllipseState(keyValuePair, ElAnemometer); break;
+                case "Logger+Luefter+ACK": UpdateEllipseState(keyValuePair, ElLuefter); break;
+                case "Logger+Temperature+ACK":
+                    //Not allowed changing temperature channel during Logging
+                    if (keyValuePair) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                    { expander.IsEnabled = false; }));
+                    else Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                    { expander.IsEnabled = true; }));
+                    UpdateEllipseState(keyValuePair, ElTemperatur); break;
+                default: break;
+            }
         }
 
         private void Einstellung_Win_EinstellungChanged(object sender, EinstellungEventArgs e)
@@ -97,6 +92,7 @@ namespace Client_eBike_Pruefstand
                         expander.Header = currentcheckbox.Content;
                         RegistryHelper.RegistrySetString("Expander Header", expander.Header);
                         RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
+                        UpdateHeaderServerSide("Temperatur", expander.Header.ToString());
                     }
                 }   
             }
@@ -129,8 +125,8 @@ namespace Client_eBike_Pruefstand
                 einstellung_Win.IPAddress = RegistryHelper.RegistryGetString("IP Address", string.Empty);
             else
             {
-                einstellung_Win.IPAddress = Einstellung_Win.staticIp;
-                RegistryHelper.RegistrySetString("IP Address", Einstellung_Win.staticIp);
+                einstellung_Win.IPAddress = TCP_Client.Default_IPAddress;
+                RegistryHelper.RegistrySetString("IP Address", TCP_Client.Default_IPAddress);
             }
 
             foreach (var checkBox in checkBoxes.Where(_checkBox => _checkBox.Content.ToString() == RegistryHelper.RegistryGetString("Last Checked", "")))
@@ -161,25 +157,17 @@ namespace Client_eBike_Pruefstand
         private void SendEllipseState(Ellipse ellipse, string name)
         {
             if (ellipse.Visibility == Visibility.Visible)
-                SendLogCommand(name, false);
+                Connector.SendLogCommand(name, false);
             else if (ellipse.Visibility == Visibility.Hidden)
-                SendLogCommand(name, true);
+                Connector.SendLogCommand(name, true);
         }
         
-        private void UpdateEllipseState(KeyValuePair<string, bool> keyValuePair, Ellipse ellipse)
+        private void UpdateEllipseState(bool keyValuePair, Ellipse ellipse)
         {
-            if (keyValuePair.Value) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            if (keyValuePair) Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             { ellipse.Visibility = Visibility.Visible; }));
             else Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             { ellipse.Visibility = Visibility.Hidden; }));
-        }
-        private void SendLogCommand(string name, bool value)
-        {
-            Dictionary<string, bool> keyValuePairs = new Dictionary<string, bool>
-            {
-                { $"Logger+{name}: ", value }
-            };
-            TCP_Client.SendCommand(JsonSerializer.Serialize(keyValuePairs));
         }
         #endregion
 
@@ -247,11 +235,16 @@ namespace Client_eBike_Pruefstand
             currentcheckbox = (CheckBox)sender;
             expander.IsExpanded = false;
             expander.Header = currentcheckbox.Content;
-            foreach (var checkBox in checkBoxes.OfType<CheckBox>().Where(_checkBox => (bool)_checkBox.IsChecked))
-                if (!currentcheckbox.Name.Equals(checkBox.Name)) 
+            foreach (CheckBox checkBox in checkBoxes.OfType<CheckBox>().Where(_checkBox => (bool)_checkBox.IsChecked))
+                if (!currentcheckbox.Name.Equals(checkBox.Name))
                     checkBox.IsChecked = false;
             RegistryHelper.RegistrySetString("Expander Header", expander.Header);
             RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
+            //Updating temperature header for server side
+            if (this.ShowActivated) //Make sure that GUI is ready
+                for(int i = 0; i < Einstellung_Win.textBoxes1.Count; i++)
+                    if(Einstellung_Win.textBoxes1[i].Text.Equals(currentcheckbox.Content.ToString()))
+                        UpdateHeaderServerSide(Einstellung_Win.textBoxes0[i].Text, Einstellung_Win.textBoxes1[i].Text);
         }
         
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -261,6 +254,13 @@ namespace Client_eBike_Pruefstand
             expander.Header = "######";
             RegistryHelper.RegistrySetString("Expander Header", "######");
             RegistryHelper.RegistrySetString("Last Checked", "");
+            if (this.IsActive)
+                UpdateHeaderServerSide("Temperatur", expander.Header.ToString());
+        }
+
+        private void UpdateHeaderServerSide(string name, string vale)
+        {
+            Connector.SendHeaderCommand(name, vale);
         }
         #endregion 
     }

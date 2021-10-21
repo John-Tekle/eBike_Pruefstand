@@ -49,12 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Anemometer\AnemometerEventArgs.cs" />
-    <Compile Include="Gewicht\GewichtEventArgs.cs" />
-    <Compile Include="Luefter\LuefterEventArgs.cs" />
+    <Compile Include="AnemometerEvent\AnemometerEventArgs.cs" />
+    <Compile Include="GewichtEvent\GewichtEventArgs.cs" />
+    <Compile Include="LuefterEvent\LuefterEventArgs.cs" />
     <Compile Include="Network_TCP\TCPEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Temperatur\TemperaturEventArgs.cs" />
+    <Compile Include="TemperaturEvent\TemperaturEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

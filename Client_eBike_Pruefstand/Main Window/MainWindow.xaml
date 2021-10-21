@@ -147,7 +147,7 @@
         <Ellipse x:Name="El_Mini" Fill="#FFFFF309" HorizontalAlignment="Left" Height="20" Margin="717,10,0,0" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="Windows_Minimize" MouseLeftButtonDown="Windows_MiniMouseLeftButtonDown"
                  MouseEnter="Windows_MiniMouseEnter"  MouseLeave="Windows_MiniMouseLeave"/>
         <Ellipse Fill="DarkGreen" HorizontalAlignment="Left" Height="20" Margin="742,10,0,0" VerticalAlignment="Top" Width="20" Opacity="1"/>
-        <GroupBox x:Name="Temperatur1" Header="Temperatur                  " HorizontalAlignment="Left" Height="170" Margin="10,46,0,0" VerticalAlignment="Top" Width="363" Foreground="White" FontSize="20" BorderBrush="{x:Null}" Background="#FF31384D">
+        <GroupBox x:Name="Temperatur1" Header="Temperatur:                  " HorizontalAlignment="Left" Height="170" Margin="10,46,0,0" VerticalAlignment="Top" Width="363" Foreground="White" FontSize="20" BorderBrush="{x:Null}" Background="#FF31384D">
             <Button x:Name="BTemperatur" Content="00.00°C" HorizontalAlignment="Center" Height="151.999" Margin="0" VerticalAlignment="Center" Width="353.333" Background="#FF31384D" BorderBrush="{x:Null}" 
                     MouseDoubleClick="LogButtonOnClick" FontSize="72" Foreground="White" Focusable="False" IsTabStop="False" UseLayoutRounding="False" Style="{DynamicResource ButtonStyle}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </GroupBox>
@@ -210,7 +210,7 @@
             </Button.ContextMenu>
         </Button>
         <TextBox x:Name="networkStatus" HorizontalAlignment="Left" Margin="10,421,0,0" TextWrapping="Wrap" Text="Disconnected" VerticalAlignment="Top" Width="777" FontSize="15" Background="#FF39393C" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" Foreground="#FFA2A2A2" FontFamily="Arial"/>
-        <Expander x:Name="expander" Header="######" HorizontalAlignment="Left" Margin="122,50,0,0" VerticalAlignment="Top" Width="107" FontSize="20" Foreground="#FF17FF00" FontFamily="Courier New">
+        <Expander x:Name="expander" Header="######" HorizontalAlignment="Left" Margin="125,50,0,0" VerticalAlignment="Top" Width="107" FontSize="20" Foreground="#FF17FF00" FontFamily="Courier New">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>

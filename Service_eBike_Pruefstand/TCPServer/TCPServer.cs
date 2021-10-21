@@ -16,6 +16,7 @@ namespace Service_eBike_Pruefstand
         private static TcpListener server;
         private static TcpClient client;
         private static NetworkStream networkStream;
+        public static bool clientState = false;
         private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
         public static event EventHandler<TCPEventArgs> CommandReceived;
         public static event NotifyOnAcceptedTcpClient NotifyOnAcceptedTcpClient;
@@ -56,6 +57,8 @@ namespace Service_eBike_Pruefstand
                     log.Info(client.Client.RemoteEndPoint);
                     networkStream = client.GetStream();
                     Thread.Sleep(2000);
+                    clientState = true;
+                    //Update Client Ellipse
                     NotifyOnAcceptedTcpClient?.Invoke();
                     string receivedCommand;
                     while (true)
@@ -69,6 +72,7 @@ namespace Service_eBike_Pruefstand
                 catch (Exception e)
                 {
                     log.Error(e.Message);
+                    clientState = false;
                 }
                 finally
                 {
@@ -97,21 +101,24 @@ namespace Service_eBike_Pruefstand
 
         public static void SendCommand(string s)
         {
-            StreamWriter streamWriter = new StreamWriter(networkStream)
+            if (clientState)
             {
-                AutoFlush = true
-            };
-            try
-            {
-                Thread.Sleep(50);
-                streamWriter.WriteLine(s);
-                streamWriter.Flush();
-            }
-            catch(Exception e)
-            {
-                streamWriter.Close();
-                streamWriter.Dispose();
-                throw new Exception(e.Message);
+                StreamWriter streamWriter = new StreamWriter(networkStream)
+                {
+                    AutoFlush = true
+                };
+                try
+                {
+                    Thread.Sleep(50);
+                    streamWriter.WriteLine(s);
+                    streamWriter.Flush();
+                }
+                catch (Exception e)
+                {
+                    streamWriter.Close();
+                    streamWriter.Dispose();
+                    throw new Exception(e.Message);
+                }
             }
         }
 

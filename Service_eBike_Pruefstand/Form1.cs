@@ -65,10 +65,10 @@ namespace Service_eBike_Pruefstand
                 {
                     if(PI.Run())
                     {
-                        Invoke(new Action(() => label_Temp.Text = $"{PI.GetTeValue.ToString()}°C"));
-                        Invoke(new Action(() => label_Gewicht.Text = $"{PI.GetGeValue.ToString()}Kg"));
-                        Invoke(new Action(() => label_Anemo.Text = $"{PI.GetAnValue.ToString()}m/s"));
-                        Invoke(new Action(() => label_Luef.Text = $"{PI.GetLuValue.ToString()}%"));
+                        Invoke(new Action(() => label_Temp.Text = $"{PI.GetTeValue.ToString("0.00")}°C"));
+                        Invoke(new Action(() => label_Gewicht.Text = $"{PI.GetGeValue.ToString("0.00")}Kg"));
+                        Invoke(new Action(() => label_Anemo.Text = $"{PI.GetAnValue.ToString("0.00")}m/s"));
+                        //Invoke(new Action(() => label_Luef.Text = $"{PI.GetLuValue.ToString()}%"));
                     }
                     else
                     {
@@ -96,39 +96,48 @@ namespace Service_eBike_Pruefstand
             clearMessageTimer.Enabled = true;
         }
 
-        private void PI_CommandToGUI(object sender, Dictionary<string, bool> keyValuePairs)
+        private void PI_CommandToGUI(object sender, Dictionary<string, object> keyValuePairs)
         {
-            foreach (KeyValuePair<string, bool> _keyValuePairs in keyValuePairs)
+            foreach (KeyValuePair<string, object> _keyValuePairs in keyValuePairs)
             {
-                switch (_keyValuePairs.Key)
+                if (_keyValuePairs.Key.Substring(0, 6) == "Logger")
                 {
-                    case "Logger+Temperature: ":
-                        UpdateCommandToGUI(0,"Temperature", _keyValuePairs, Temperatur);
-                        break;
-                    case "Logger+Gewicht: ":
-                        UpdateCommandToGUI(1, "Gewicht", _keyValuePairs, Gewicht);
-                        break;
-                    case "Logger+Anemometer: ":
-                        UpdateCommandToGUI(2, "Anemometer", _keyValuePairs, Anemometer);
-                        break;
-                    case "Logger+Luefter: ":
-                        UpdateCommandToGUI(3, "Luefter", _keyValuePairs, Lufter);
-                        break;
-                    default:
-                        break;
+                    switch (_keyValuePairs.Key)
+                    {
+                        case "Logger+Temperature: ":
+                            UpdateCommandToGUI(0, "Temperature", _keyValuePairs, Temperatur);
+                            break;
+                        case "Logger+Gewicht: ":
+                            UpdateCommandToGUI(1, "Gewicht", _keyValuePairs, Gewicht);
+                            break;
+                        case "Logger+Anemometer: ":
+                            UpdateCommandToGUI(2, "Anemometer", _keyValuePairs, Anemometer);
+                            break;
+                        case "Logger+Luefter: ":
+                            UpdateCommandToGUI(3, "Luefter", _keyValuePairs, Lufter);
+                            break;
+                        default:
+                            break;
+                    }
+                    headerLogTimer.Start();
+                }
+                else if (_keyValuePairs.Key.Substring(0, 10) == "Temperatur")
+                {
+                    _ = Invoke(new Action(() => Temperatur.Text = $"Temperatur: {_keyValuePairs.Value}"));
                 }
             }
-            headerLogTimer.Start();
         }
 
-        private void UpdateCommandToGUI(int i, string name, KeyValuePair<string, bool> keyValuePairs, GroupBox groupBox)
+        private void UpdateCommandToGUI(int i, string name, KeyValuePair<string, object> _keyValuePairs, GroupBox groupBox)
         {
-            if (keyValuePairs.Value)
+            bool logStateValue = bool.Parse(_keyValuePairs.Value.ToString());
+
+            if (logStateValue)
             {
                 logState[i] = true;
                 PI.SendCommand(name, true);
             }
-            else if (!keyValuePairs.Value)
+            else if (!logStateValue)
             {
                 logState[i] = false;
                 _ = Invoke(new Action(() => groupBox.ForeColor = System.Drawing.Color.White));
@@ -137,7 +146,7 @@ namespace Service_eBike_Pruefstand
 
             try
             {
-                PI.keyValuePairsUpdate[name] = keyValuePairs.Value;
+                PI.keyValuePairsUpdate[name] = logStateValue;
                 //keyValuePairs.Key.Substring(7, (int)(keyValuePairs.Key.Length - 2))
             }
             catch (Exception e)

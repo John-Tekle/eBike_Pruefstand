@@ -41,17 +41,17 @@ namespace Service_eBike_Pruefstand
                 int length = 0;
                 if (WriteConfigByte(chan))
                 {
-                    Thread.Sleep(1);
+                    //Thread.Sleep(1);
                     if (!ReadResult(out data, out length))
                     {
                         log.Error("Reading data from MAX11617, Channel to read: " + chan);
                         speed = float.MaxValue;
                         return false;
                     }
-                    UInt16 sensorValue = (UInt16)((data[0] << 8) | data[1]);
+                    UInt16 sensorValue = (UInt16)(((data[0] << 8) | data[1]) & 0b0000111111111111);
                     float sensorVoltage = (float)(3.30 / 4095.0) * sensorValue;
                     speed = (float)((sensorVoltage - (float)1.2379) / (float)0.005);
-                    speed = (float)Math.Round(speed, 2);
+                    speed = (float)Math.Round(sensorVoltage, 2);
                     return true;
                 }
                 else

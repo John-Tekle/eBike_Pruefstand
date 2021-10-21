@@ -8,7 +8,7 @@ using Common_eBike_Pruefstand;
 
 namespace Client_eBike_Pruefstand
 {
-    public delegate void Notify(string s);  // delegate
+    
     public static class TCP_Client
     {
         private static IPAddress IPAddress;
@@ -18,10 +18,9 @@ namespace Client_eBike_Pruefstand
         private static TcpClient client;
         private static NetworkStream networkStream;
         public static event EventHandler<TCPEventArgs> CommandReceived;
-        public static event Notify ClientStatusUpdate; // event
-        private static string ClientConnected = "Connected";
-        private static string ClientDisconnected = "Disconnected";
         private static Thread thread;
+        private const string ClientConnected = "Connected";
+        private const string ClientDisconnected = "Disconnected";
 
         /// <returns>
         /// true if the System.Net.Sockets.TcpClient.Client socket was connected to a remote resource as of the most recent operation; otherwise, false.
@@ -63,7 +62,7 @@ namespace Client_eBike_Pruefstand
                        // _ = MessageBox.Show(e.Message);
                     }
                     //Trying to find out if server is disconnected
-                    ClientStatusUpdate?.Invoke(ClientDisconnected);
+                    Connector.OnClientStatusUpdate(ClientDisconnected);
                     Close();
                     stop_thread = false;
                 }
@@ -89,13 +88,12 @@ namespace Client_eBike_Pruefstand
                 {
                     client.Connect(IPEndPoint);
                     networkStream = client.GetStream();
-
                     thread = new Thread(Run)
                     {
-                        IsBackground = true
+                        IsBackground = false
                     };
                     thread.Start();
-                    ClientStatusUpdate?.Invoke(ClientConnected);
+                    Connector.OnClientStatusUpdate(ClientConnected);
                 }
                 catch (Exception e)
                 {
@@ -140,17 +138,19 @@ namespace Client_eBike_Pruefstand
 
         public static void SendCommand(string s)
         {
-            try
+            if(client.Connected)
             {
-                StreamWriter streamWriter = new StreamWriter(networkStream);
-                streamWriter.AutoFlush = true;
-                streamWriter.WriteLine(s);
+                try
+                {
+                    StreamWriter streamWriter = new StreamWriter(networkStream);
+                    streamWriter.AutoFlush = true;
+                    streamWriter.WriteLine(s);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
             }
-            catch(Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            
         }
 
         public static void SendFile()

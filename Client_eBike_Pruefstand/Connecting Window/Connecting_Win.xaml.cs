@@ -49,7 +49,7 @@ namespace Client_eBike_Pruefstand
         {
             thread = new Thread(RUN)
             {
-                IsBackground = true
+                IsBackground = false
             };
             thread.Start();
         }

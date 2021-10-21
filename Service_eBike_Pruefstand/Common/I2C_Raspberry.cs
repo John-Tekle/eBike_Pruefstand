@@ -35,7 +35,7 @@ namespace Service_eBike_Pruefstand
 
     public class ADC_MAX11617
     {
-        private const byte Addr_IMAX11617 = 35;
+        private const byte Addr_IMAX11617 = 51;
 
         public enum Address
         {
@@ -46,7 +46,7 @@ namespace Service_eBike_Pruefstand
 
         public enum Channel
         {
-            Anemometer = 7,
+            Anemometer = 6,
             Gewicht,
             Luefter,
             TemperaturDefault = 0,
