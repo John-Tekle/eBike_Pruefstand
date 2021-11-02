@@ -241,7 +241,7 @@ namespace Client_eBike_Pruefstand
             RegistryHelper.RegistrySetString("Expander Header", expander.Header);
             RegistryHelper.RegistrySetString("Last Checked", currentcheckbox.Content);
             //Updating temperature header for server side
-            if (this.ShowActivated) //Make sure that GUI is ready
+            if (this.ShowActivated) //Make sure that GUI is visible
                 for(int i = 0; i < Einstellung_Win.textBoxes1.Count; i++)
                     if(Einstellung_Win.textBoxes1[i].Text.Equals(currentcheckbox.Content.ToString()))
                         UpdateHeaderServerSide(Einstellung_Win.textBoxes0[i].Text, Einstellung_Win.textBoxes1[i].Text);

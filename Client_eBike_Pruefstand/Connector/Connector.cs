@@ -1,6 +1,7 @@
 ﻿using Common_eBike_Pruefstand;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Shapes;
@@ -47,6 +48,24 @@ namespace Client_eBike_Pruefstand
                                 break;
                             case "Value+Anemometer":
                                 Anemometer.Update(keyValuePair.Value);
+                                //using (Process myProcess = new Process())
+                                //{
+                                //    myProcess.StartInfo.FileName = "scp.exe";
+                                //    myProcess.StartInfo.Arguments = "pi-eth:/home/pi/Documents/1GB.bin c:\\temp";
+                                //    myProcess.StartInfo.UseShellExecute = false;
+                                //    myProcess.StartInfo.RedirectStandardOutput = false;
+                                //    myProcess.Start();
+                                //}
+                                //ProcessStartInfo psi = new ProcessStartInfo
+                                //{
+                                //    FileName = @"C:\\Windows\\System32\\OpenSSH\\scp.exe",
+                                //    WindowStyle = ProcessWindowStyle.Hidden,
+                                //    UseShellExecute = true,
+                                //    CreateNoWindow = true,
+                                //   // WorkingDirectory = @"C:\\Windows\\System32\\OpenSSH\\scp.exe",
+                                //    Arguments = "/c pi-eth:/home/pi/Documents/1GB.bin c:\\temp"
+                                //};
+                                //_ = Process.Start(psi);
                                 break;
                             case "Value+Luefter":
                                 break;

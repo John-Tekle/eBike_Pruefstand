@@ -129,6 +129,7 @@
     <Compile Include="Common\I2C_Extensions.cs" />
     <Compile Include="Gewicht\Gewicht.cs" />
     <Compile Include="Gewicht\IGewicht.cs" />
+    <Compile Include="Logger\Logger.cs" />
     <Compile Include="Luefter\ILuefter.cs" />
     <Compile Include="Luefter\Luefter.cs" />
     <Compile Include="Program.cs" />

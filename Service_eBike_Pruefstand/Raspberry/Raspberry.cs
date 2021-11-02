@@ -16,6 +16,7 @@ namespace Service_eBike_Pruefstand
         public Temperatur Temperatur { get; }
 
         private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger logTemperatur = NLog.LogManager.GetLogger("Temperatur_Log");
 
         private float anemometer = (float)99.99;//float.MaxValue;
         private float gewicht = (float)99.99;//float.MaxValue;
@@ -33,6 +34,10 @@ namespace Service_eBike_Pruefstand
         private static ADC_MAX11617.Channel tempChannel;
 
         public event Notify CommandToGUI; // event
+        Logger loggerTemperatur;
+        Logger loggerGewicht;
+        Logger loggerAnemometer;
+        Logger loggerLuefter;
         #endregion
 
         #region constructor & destructor
@@ -89,6 +94,19 @@ namespace Service_eBike_Pruefstand
                 if (this.Gewicht.Read(Gewicht.Channel, out this.gewicht)) _return = true; else return false;
                 if (this.Anemometer.Read(Anemometer.Channel, out this.anemometer)) _return = true; else return false;
                 //if (this.Luefter.Read(out luefter)) _return = true; else return false;
+
+                #region Log every one secound
+                {
+                    if (Logger.logState[0])
+                        loggerTemperatur.Log(GetTeValue.ToString("00.00"));
+                    if (Logger.logState[1])
+                        loggerGewicht.Log(GetGeValue.ToString("00.00"));
+                    if (Logger.logState[2])
+                        loggerAnemometer.Log(GetAnValue.ToString("00.00"));
+                    if (Logger.logState[3])
+                        loggerLuefter.Log(GetLuValue.ToString("00.00"));
+                }
+                #endregion
 
                 if (_return)
                     UpdateData(GetAnValue, GetGeValue, GetLuValue, GetTeValue);
@@ -175,19 +193,20 @@ namespace Service_eBike_Pruefstand
                     if(res.Key.Substring(0, 6) == "Logger")
                     {
                         OnCommandToGUI(sender, KeyValuePairsCommmand);
+                        bool logStateValue = bool.Parse(res.Value.ToString());
                         switch (res.Key.Substring(0, (int)(res.Key.Length - 2)))
                         {
                             case "Logger+Temperature":
-                                //OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                LogStartStop("Temperatur", ref loggerTemperatur, logStateValue, 0);
                                 break;
                             case "Logger+Gewicht":
-                                //OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                LogStartStop("Gewicht", ref loggerGewicht, logStateValue, 1);
                                 break;
                             case "Logger+Anemometer":
-                                //OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                LogStartStop("Anemometer", ref loggerAnemometer, logStateValue, 2);
                                 break;
                             case "Logger+Luefter":
-                                //OnCommandToGUI(sender, KeyValuePairsCommmand);
+                                LogStartStop("Luefter", ref loggerLuefter, logStateValue, 3);
                                 break;
                             default:
                                 log.Error($"The given key '{res.Key}' could not processed.");
@@ -234,6 +253,25 @@ namespace Service_eBike_Pruefstand
         private void OnCommandToGUI(object sender, Dictionary<string, object> keyValuePairsCommmand)
         {
             CommandToGUI?.Invoke(sender, keyValuePairsCommmand);
+        }
+
+        private void LogStartStop(string name, ref Logger logger, bool state, int i)
+        {
+            if (!(i >= 0 || i <= 3))
+            {
+                log.Error("The indexer must be greater than 0 and less than 3.");
+                return;
+            }
+            if (state)
+            {
+                logger = new Logger(name);
+                Logger.logState[i] = state;
+            }
+            else
+            {
+                Logger.logState[i] = state;
+                logger = null;
+            }
         }
         #endregion
     }
