@@ -64,6 +64,7 @@ namespace Client_eBike_Pruefstand
                 Thread.Sleep(5000);
                 try
                 {
+                    SSHPortForwarding.StartPortForwarding();
                     TCP_Client.Connect();
                 }
                 catch (Exception ex)

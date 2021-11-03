@@ -174,10 +174,12 @@ namespace Client_eBike_Pruefstand
         #region Ellipse Close & Mini
         private void Windows_Close(object sender, MouseButtonEventArgs e)
         {
+            SSHPortForwarding.StopPortForwarding();
             TCP_Client.Close();
-            if(einstellung_Win.ShowActivated)
+            if (einstellung_Win.ShowActivated)
                 einstellung_Win.Close();
             this.Close();
+
         }
 
         private void Windows_Minimize(object sender, MouseButtonEventArgs e)

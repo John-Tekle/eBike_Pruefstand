@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Threading;
 using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -13,7 +14,7 @@ namespace Client_eBike_Pruefstand
     public delegate void ClientStatusUpdate_Notify(string s);
     public static class Connector
     {
-        //private static bool keyValuePair;
+        private static KeyValuePair<string, object> key_ValuePair;
         public static event EllipseUpdate_Notify EllipseUpdater; // event
         public static event ClientStatusUpdate_Notify ClientStatusUpdater; // event
         public static Dictionary<string, object> KeyValuePairsCommmand { get; private set; }
@@ -48,28 +49,20 @@ namespace Client_eBike_Pruefstand
                                 break;
                             case "Value+Anemometer":
                                 Anemometer.Update(keyValuePair.Value);
-                                //using (Process myProcess = new Process())
-                                //{
-                                //    myProcess.StartInfo.FileName = "scp.exe";
-                                //    myProcess.StartInfo.Arguments = "pi-eth:/home/pi/Documents/1GB.bin c:\\temp";
-                                //    myProcess.StartInfo.UseShellExecute = false;
-                                //    myProcess.StartInfo.RedirectStandardOutput = false;
-                                //    myProcess.Start();
-                                //}
-                                //ProcessStartInfo psi = new ProcessStartInfo
-                                //{
-                                //    FileName = @"C:\\Windows\\System32\\OpenSSH\\scp.exe",
-                                //    WindowStyle = ProcessWindowStyle.Hidden,
-                                //    UseShellExecute = true,
-                                //    CreateNoWindow = true,
-                                //   // WorkingDirectory = @"C:\\Windows\\System32\\OpenSSH\\scp.exe",
-                                //    Arguments = "/c pi-eth:/home/pi/Documents/1GB.bin c:\\temp"
-                                //};
-                                //_ = Process.Start(psi);
                                 break;
                             case "Value+Luefter":
                                 break;
                         }
+                    }
+
+                    if (keyValuePair.Key.Substring(0, 4) == "Path")
+                    {
+                        key_ValuePair = keyValuePair;
+                        Thread thread = new(DownloadTask) //Using Thread files can be downloaded parallel 
+                        {
+                            IsBackground = false
+                        };
+                        thread.Start();
                     }
                 }
             }
@@ -77,6 +70,12 @@ namespace Client_eBike_Pruefstand
             {
                 _ = MessageBox.Show(ex.Message);
             }
+        }
+       
+        private static void DownloadTask()
+        {
+            using SecureDownload secureDownload = new(key_ValuePair.Value.ToString());
+            secureDownload.DownloadFile();
         }
 
         public static void SendLogCommand(string name, bool value)

@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Service_eBike_Pruefstand
 {
@@ -146,33 +147,31 @@ namespace Service_eBike_Pruefstand
 
         private void Temperatur_TemperatureChanged(object sender, Common_eBike_Pruefstand.TemperaturEventArgs e)
         {
-            SendCommandToClient(e.Name, e.Temperature);
+            SendCommand(e.Name, e.Temperature);
         }
 
         private void Anemometer_SpeedChanged(object sender, Common_eBike_Pruefstand.AnemometerEventArgs e)
         {
-            SendCommandToClient(e.Name, e.Speed);
+            SendCommand(e.Name, e.Speed);
         }
 
         private void Gewicht_LoadChanged(object sender, Common_eBike_Pruefstand.GewichtEventArgs e)
         {
-            SendCommandToClient(e.Name, e.Load);
+            SendCommand(e.Name, e.Load);
         }
 
         private void Luefter_ValueChanged(object sender, Common_eBike_Pruefstand.LuefterEventArgs e)
         {
-            //SendCommandToClient(e.Name, e.Value);
+            //SendCommand(e.Name, e.Value);
         }
 
-        private void SendCommandToClient(string name, float value)
+        private void SendCommand(string name, float value)
         {
-
             Dictionary<string, float> keyValuePairs = new Dictionary<string, float>
                 {
                     { $"Value+{name}", value }
                 };
             TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
-
         }
         public void SendCommand(string name, bool value)
         {
@@ -180,6 +179,14 @@ namespace Service_eBike_Pruefstand
             {
                 { $"Logger+{name}+ACK: ", value }
             };
+            TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
+        }
+        private void SendCommand(string commandName, string path)
+        {
+            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>
+                {
+                    { $"Path+{commandName}", path }
+                };
             TCPServer.SendCommand(JsonSerializer.Serialize(keyValuePairs));
         }
         private void TCPServer_CommandReceived(object sender, Common_eBike_Pruefstand.TCPEventArgs e)
@@ -270,6 +277,7 @@ namespace Service_eBike_Pruefstand
             else
             {
                 Logger.logState[i] = state;
+                SendCommand(name, logger.Path);
                 logger = null;
             }
         }

@@ -104,13 +104,17 @@ namespace Client_eBike_Pruefstand
 
         public static void Close()
         {
-            if(client.Connected)
+            try
             {
-                networkStream.Close();
-                networkStream.Dispose();
-                client.Close();
-                client.Dispose();
+                if (client.Connected)
+                {
+                    networkStream.Close();
+                    networkStream.Dispose();
+                    client.Close();
+                    client.Dispose();
+                }
             }
+            catch (Exception) { }
         }
 
         public static string ReceiveCommand()

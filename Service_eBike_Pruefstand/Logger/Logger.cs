@@ -12,7 +12,7 @@ namespace Service_eBike_Pruefstand
         public string Path { get; private set; }
         public Logger(string name)
         {
-            Path = $"/home/pi/Documents/{name}/{name}_{DateTime.Now:yyyy-MM-dd HH:mm.ss}.txt";
+            Path = $"/home/pi/Documents/{name}/{name}_{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.txt";
         }
 
         public void Log(string s)
